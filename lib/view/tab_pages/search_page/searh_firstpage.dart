@@ -10,6 +10,17 @@ class SearhFirstpage extends StatefulWidget {
 class _SearhFirstpageState extends State<SearhFirstpage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.search, size: 64),
+            SizedBox(height: 16),
+            Text('Search', style: TextStyle(fontSize: 32)),
+          ],
+        ),
+      ),
+    );
   }
 }

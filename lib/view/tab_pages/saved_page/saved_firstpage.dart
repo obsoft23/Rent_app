@@ -10,6 +10,17 @@ class SavedFirstpage extends StatefulWidget {
 class _SavedFirstpageState extends State<SavedFirstpage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.favorite_outline, size: 64),
+            SizedBox(height: 16),
+            Text('Saved', style: TextStyle(fontSize: 32)),
+          ],
+        ),
+      ),
+    );
   }
 }

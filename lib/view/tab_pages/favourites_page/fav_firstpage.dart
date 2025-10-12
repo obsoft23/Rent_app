@@ -10,6 +10,17 @@ class FavFirstpage extends StatefulWidget {
 class _FavFirstpageState extends State<FavFirstpage> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.favorite, size: 64),
+            SizedBox(height: 16),
+            Text('Favorites', style: TextStyle(fontSize: 32)),
+          ],
+        ),
+      ),
+    );
   }
 }

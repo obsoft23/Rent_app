@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:rentapp/theme/theme.dart';
+import 'package:rentapp/view/tab_pages/favourites_page/fav_firstpage.dart';
+import 'package:rentapp/view/tab_pages/saved_page/saved_firstpage.dart';
+import 'package:rentapp/view/tab_pages/search_page/searh_firstpage.dart';
+import 'package:rentapp/view/tab_pages/user_profile_page/profile_firstpage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,54 +19,10 @@ class _HomePageState extends State<HomePage>
   late Animation<double> _animation;
 
   final List<Widget> _pages = [
-    Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.search, size: 64),
-            SizedBox(height: 16),
-            Text('Search', style: TextStyle(fontSize: 32)),
-          ],
-        ),
-      ),
-    ),
-    Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.favorite_outline_outlined, size: 64),
-            SizedBox(height: 16),
-            Text('Saved', style: TextStyle(fontSize: 32)),
-          ],
-        ),
-      ),
-    ),
-    Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.favorite, size: 64),
-            SizedBox(height: 16),
-            Text('Favorites', style: TextStyle(fontSize: 32)),
-          ],
-        ),
-      ),
-    ),
-    Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.person, size: 64),
-            SizedBox(height: 16),
-            Text('Profile', style: TextStyle(fontSize: 32)),
-          ],
-        ),
-      ),
-    ),
+    SearhFirstpage(),
+    SavedFirstpage(),
+    FavFirstpage(),
+    ProfileFirstpage(),
   ];
 
   @override
