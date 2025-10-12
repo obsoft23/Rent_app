@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1041486632789",
+    "project_id": "ngrent-b6a74",
+    "storage_bucket": "ngrent-b6a74.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1041486632789:android:41d631ba902ff0c38e81dc",
+        "android_client_info": {
+          "package_name": "com.example.rentapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkSrpr65cOrl3gphLcpoxVaHsxTyjiPp0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
