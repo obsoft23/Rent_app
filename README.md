@@ -1,8 +1,8 @@
 # rentapp
 
-Rent App Code Base Exampl e is a modern Flutter application designed to connect property seekers with verified real-estate agents. The platform simplifies the rental process by allowing users to search, filter, and inquire about available apartments or homes directly through trusted agents. Built with a clean and intuitive interface, it supports real-time updates, secure messaging, and agent verification, ensuring transparency and trust in every transaction.
+Rent App Code Base Example is a modern Flutter application designed to connect property seekers with verified real-estate agents. The platform simplifies the rental process by allowing users to search, filter, and inquire about available apartments or homes directly through trusted agents. Built with a clean and intuitive interface, it supports real-time updates, secure messaging, and agent verification, ensuring transparency and trust in every transaction.
 
-Tech Stack: Flutter, Firebase for Auth and push
+Tech Stack: Flutter, Firebase for Auth and push, Rest APIs
 
 - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
