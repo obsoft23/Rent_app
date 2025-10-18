@@ -16,9 +16,9 @@ samples, guidance on mobile development, and a full API reference.
 <img width="320" height="640" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 23 10 10" src="https://github.com/user-attachments/assets/97629386-09c8-4fec-ab28-7f289e6f8746" /> <img width="320" height="630" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 23 10 14" src="https://github.com/user-attachments/assets/683f67fb-5d8a-4a9c-93a9-4fcca23df7f0" />
 <img width="320" height="630"  alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 23 10 26" src="https://github.com/user-attachments/assets/4831c8e5-ae27-42dd-b388-34c7de19b7a5" />
 
-<img width="320" height="630" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 11 58 25" src="https://github.com/user-attachments/assets/bfa73de7-6013-4a7c-9344-196254bf0c8c" />
-<img wwidth="300" height="600" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 11 58 27" src="https://github.com/user-attachments/assets/db0a3622-2f7d-4b4e-8c81-be41e9215737" />
-<img width="300" height="600" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 11 58 33" src="https://github.com/user-attachments/assets/29f51b47-557e-4021-9201-62a97ef0c361" />
-<img width="300" height="600" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 11 58 38" src="https://github.com/user-attachments/assets/6abb45c0-4e79-4908-983b-52ac2e83ea75" />
-<img width="300" height="600" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 11 58 41" src="https://github.com/user-attachments/assets/83995866-b218-41b5-83d5-dfa89489a6a5" />
-<img width="300" height="600"  alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 11 58 46" src="https://github.com/user-attachments/assets/39b9083c-00da-4a35-8506-6a5b992b05d0" />
+<img width="320" height="640" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 11 58 25" src="https://github.com/user-attachments/assets/bfa73de7-6013-4a7c-9344-196254bf0c8c" />
+<img width="320" height="640" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 11 58 27" src="https://github.com/user-attachments/assets/db0a3622-2f7d-4b4e-8c81-be41e9215737" />
+<img wwidth="320" height="640" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 11 58 33" src="https://github.com/user-attachments/assets/29f51b47-557e-4021-9201-62a97ef0c361" />
+<img width="320" height="640" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 11 58 38" src="https://github.com/user-attachments/assets/6abb45c0-4e79-4908-983b-52ac2e83ea75" />
+<img width="320" height="640" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 11 58 41" src="https://github.com/user-attachments/assets/83995866-b218-41b5-83d5-dfa89489a6a5" />
+<img width="320" height="640"  alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 11 58 46" src="https://github.com/user-attachments/assets/39b9083c-00da-4a35-8506-6a5b992b05d0" />
