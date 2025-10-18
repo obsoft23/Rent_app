@@ -29,7 +29,9 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Satoshi',
         colorScheme: ColorScheme.fromSeed(seedColor: igBlue),
         primaryColor: igBlue,
+        useMaterial3: true,
       ),
+
       home: SplashScreen(),
     );
   }

@@ -22,6 +22,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:rentapp/theme/theme.dart';
 
 class AgentAddListingsPage extends StatefulWidget {
   const AgentAddListingsPage({
@@ -113,6 +114,7 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
   // Amenities
   final List<String> amenityOptions = const [
     'Air Conditioning',
+    'Parking',
     'Swimming Pool',
     'Gym',
     'Security',
@@ -183,8 +185,9 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
       } else if (lt != null) {
         if (lt.toLowerCase().contains('rent')) listingType = 'Rent';
         if (lt.toLowerCase().contains('sale') ||
-            lt.toLowerCase().contains('buy'))
+            lt.toLowerCase().contains('buy')) {
           listingType = 'Sale';
+        }
         if (lt.toLowerCase().contains('lease')) listingType = 'Lease';
       }
 
@@ -306,6 +309,7 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
     } catch (_) {}
   }
 
+  // ignore: unused_element
   Future<void> _pickVideo() async {
     try {
       final picked = await _picker.pickVideo(source: ImageSource.gallery);
@@ -473,16 +477,107 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    // ignore: unused_local_variable
     final color = theme.colorScheme;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Property'),
-        actions: [
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () async {
+            final shouldCancel = await showDialog<bool>(
+              context: context,
+              builder: (context) => AlertDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                title: Row(
+                  children: [
+                    const Icon(Icons.warning_amber_rounded, color: Colors.red),
+                    const SizedBox(width: 8),
+                    const Text('Cancel Listing?'),
+                  ],
+                ),
+                content: const Text(
+                  'Are you sure you want to cancel? Unsaved changes will be lost.',
+                  style: TextStyle(fontSize: 16),
+                ),
+                actions: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.grey[300],
+                      foregroundColor: Colors.black,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: const Text('No'),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const Text('Yes'),
+                  ),
+                ],
+              ),
+            );
+            if (shouldCancel == true) {
+              // ignore: use_build_context_synchronously
+              Navigator.of(context).pop();
+            }
+          },
+        ),
+        /*actions: [
           TextButton(
             onPressed: _submitting ? null : () => _handleSubmit(publish: false),
             child: const Text('Save draft'),
           ),
-        ],
+        ],*/
+      ),
+      bottomNavigationBar: SafeArea(
+        minimum: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+        child: Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                onPressed: _submitting
+                    ? null
+                    : () => _handleSubmit(publish: false),
+                child: const Text('Save Draft'),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: igBlue,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+                onPressed: () {},
+                child: const Text(
+                  'Publish Listing',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
         child: Column(
@@ -559,13 +654,13 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
                                 spacing: 8,
                                 runSpacing: 8,
                                 children: [
-                                  OutlinedButton.icon(
+                                  /* OutlinedButton.icon(
                                     icon: const Icon(
                                       Icons.video_library_outlined,
                                     ),
                                     label: const Text('Add Video File'),
                                     onPressed: _pickVideo,
-                                  ),
+                                  ),*/
                                   OutlinedButton.icon(
                                     icon: const Icon(Icons.link),
                                     label: const Text('Add Video URL'),
@@ -599,8 +694,9 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
                                           ),
                                           keyboardType: TextInputType.url,
                                           validator: (v) {
-                                            if (v == null || v.isEmpty)
+                                            if (v == null || v.isEmpty) {
                                               return null;
+                                            }
                                             final ok =
                                                 Uri.tryParse(
                                                   v,
@@ -694,13 +790,15 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
                                     ),
                                     keyboardType: TextInputType.number,
                                     validator: (v) {
-                                      if (v == null || v.trim().isEmpty)
+                                      if (v == null || v.trim().isEmpty) {
                                         return 'Price is required';
+                                      }
                                       final d = double.tryParse(
                                         v.replaceAll(',', ''),
                                       );
-                                      if (d == null || d <= 0)
+                                      if (d == null || d <= 0) {
                                         return 'Enter a valid price';
+                                      }
                                       return null;
                                     },
                                   ),
@@ -784,14 +882,6 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
                                   ),
                                 ),
                                 const SizedBox(width: 12),
-                                Expanded(
-                                  child: _CounterField(
-                                    label: 'Parking',
-                                    value: parking,
-                                    onChanged: (v) =>
-                                        setState(() => parking = v),
-                                  ),
-                                ),
                               ],
                             ),
                             const SizedBox(height: 12),
@@ -835,8 +925,9 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
                                         firstDate: first,
                                         lastDate: DateTime(now.year + 2),
                                       );
-                                      if (picked != null)
+                                      if (picked != null) {
                                         setState(() => availableFrom = picked);
+                                      }
                                     },
                                     child: InputDecorator(
                                       decoration: const InputDecoration(
@@ -895,15 +986,15 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
                                 Expanded(
                                   child: OutlinedButton.icon(
                                     icon: const Icon(Icons.search),
-                                    label: const Text('Search Location'),
+                                    label: const Text('Search'),
                                     onPressed: _openLocationSearch,
                                   ),
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: OutlinedButton.icon(
-                                    icon: const Icon(Icons.map_outlined),
-                                    label: const Text('Pick on Map'),
+                                    icon: const Icon(Icons.pin_drop_outlined),
+                                    label: const Text('Google Map'),
                                     onPressed: _pickOnMap,
                                   ),
                                 ),
@@ -945,7 +1036,7 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
                             const SizedBox(height: 12),
                             Row(
                               children: [
-                                Expanded(
+                                /*   Expanded(
                                   child: TextFormField(
                                     controller: countryCtrl,
                                     decoration: const InputDecoration(
@@ -958,14 +1049,14 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
                                   child: TextFormField(
                                     controller: postalCodeCtrl,
                                     decoration: const InputDecoration(
-                                      labelText: 'Postal Code',
+                                      labelText: 'Zip Code',
                                     ),
                                   ),
-                                ),
+                                ),*/
                               ],
                             ),
                             const SizedBox(height: 12),
-                            Row(
+                            /* Row(
                               children: [
                                 Expanded(
                                   child: TextFormField(
@@ -991,7 +1082,7 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
                                   ),
                                 ),
                               ],
-                            ),
+                            ),*/
                             const SizedBox(height: 8),
                             Text(
                               'Tip: Use Search or Pick on Map to set coordinates.',
@@ -1081,7 +1172,7 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
         _kv('Title', titleCtrl.text),
         _kv('Listing Type', listingType),
         _kv('Property Type', propertyType ?? '-'),
-        _kv('Price', '${currency} ${priceCtrl.text}'),
+        _kv('Price', '$currency ${priceCtrl.text}'),
         _kv('Size', '${sizeCtrl.text} $sizeUnit'),
         _kv('Rooms', '🛏 $bedrooms  •  🛁 $bathrooms  •  🚗 $parking'),
         _kv('Furnishing', furnishing ?? '-'),
@@ -1154,7 +1245,7 @@ class _BottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    return Container(); /*SafeArea(
       top: false,
       child: Container(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -1190,7 +1281,7 @@ class _BottomBar extends StatelessWidget {
           ],
         ),
       ),
-    );
+    );*/
   }
 }
 
@@ -1523,12 +1614,13 @@ class _PhotoThumb extends StatelessWidget {
       image = FutureBuilder(
         future: file.readAsBytes(),
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
+          if (!snapshot.hasData) {
             return const SizedBox(
               width: 100,
               height: 100,
               child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
             );
+          }
           return Image.memory(
             snapshot.data as Uint8List,
             fit: BoxFit.cover,
@@ -1603,7 +1695,20 @@ class _MediaVideoList extends StatelessWidget {
             leading: const Icon(Icons.videocam_outlined),
             title: Text(v.name),
             subtitle: Text(
-              '${(v.lengthSync() / (1024 * 1024)).toStringAsFixed(2)} MB',
+              FutureBuilder(
+                    future: v.length(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done &&
+                          snapshot.hasData) {
+                        return Text(
+                          '${(snapshot.data! / (1024 * 1024)).toStringAsFixed(2)} MB',
+                        );
+                      } else {
+                        return const Text('Calculating...');
+                      }
+                    },
+                  )
+                  as String,
               maxLines: 1,
             ),
             trailing: IconButton(
@@ -1615,10 +1720,6 @@ class _MediaVideoList extends StatelessWidget {
       }),
     );
   }
-}
-
-extension on XFile {
-  lengthSync() {}
 }
 
 // Data model to collect and submit
