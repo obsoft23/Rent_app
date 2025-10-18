@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rentapp/theme/theme.dart';
-import 'package:rentapp/view/tab_pages/favourites_page/fav_firstpage.dart';
+import 'package:rentapp/view/tab_pages/agent_listing_page/agent_listings_page.dart';
+import 'package:rentapp/view/tab_pages/favourites_page/enquiry_firstpage.dart';
 import 'package:rentapp/view/tab_pages/saved_page/saved_firstpage.dart';
 import 'package:rentapp/view/tab_pages/search_page/searh_firstpage.dart';
 import 'package:rentapp/view/tab_pages/user_profile_page/profile_firstpage.dart';
@@ -21,7 +22,8 @@ class _HomePageState extends State<HomePage>
   final List<Widget> _pages = [
     SearhFirstpage(),
     SavedFirstpage(),
-    FavFirstpage(),
+    AgentListingsPage(),
+    EnquiryFirstPage(),
     ProfileFirstpage(),
   ];
 
@@ -65,17 +67,30 @@ class _HomePageState extends State<HomePage>
         selectedItemColor: igBlue, // Color for selected icon
         unselectedItemColor: igText2, // Color for unselected icons
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_outline_outlined),
-            label: 'Saved',
+            icon: Icon(Icons.travel_explore_outlined),
+            label: 'Explore',
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Saved'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.storefront_outlined),
+            label: 'Listings',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favorites',
+            icon: Icon(Icons.chat_bubble_outline_rounded),
+            label: 'Enquiries',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle_outlined),
+            label: 'Profile',
+          ),
         ],
+        selectedFontSize: 14, // Keep font size consistent
+        unselectedFontSize: 14, // Keep font size consistent
+        selectedIconTheme: IconThemeData(size: 24), // Keep icon size consistent
+        unselectedIconTheme: IconThemeData(
+          size: 24,
+        ), // Keep icon size consistent
       ),
     );
   }

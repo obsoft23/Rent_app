@@ -7,12 +7,13 @@ import 'package:get/state_manager.dart';
 import 'package:rentapp/firebase_options.dart';
 import 'package:rentapp/theme/theme.dart';
 import 'package:rentapp/view/first_page.dart';
+import 'package:rentapp/view/splashscreen/splashscreen.dart';
 
 import 'view/home_page.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  //WidgetsFlutterBinding.ensureInitialized();
+  //await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -24,8 +25,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(colorScheme: ColorScheme.fromSeed(seedColor: igBlue)),
-      home: FirstPage(),
+      theme: ThemeData(
+        fontFamily: 'Satoshi',
+        colorScheme: ColorScheme.fromSeed(seedColor: igBlue),
+      ),
+      home: SplashScreen(),
     );
   }
 }

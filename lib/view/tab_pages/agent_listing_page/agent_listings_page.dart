@@ -1,24 +1,60 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:card_loading/card_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:rentapp/components/demo_lists.dart';
-import 'package:rentapp/components/property_card_grid.dart';
+import 'package:rentapp/theme/theme.dart';
+import 'package:rentapp/view/tab_pages/favourites_page/enquiry_card.dart';
 
-class SavedFirstpage extends StatefulWidget {
-  const SavedFirstpage({super.key});
+class AgentListingsPage extends StatefulWidget {
+  const AgentListingsPage({super.key});
 
   @override
-  State<SavedFirstpage> createState() => _SavedFirstpageState();
+  _AgentListingsPageState createState() => _AgentListingsPageState();
 }
 
-class _SavedFirstpageState extends State<SavedFirstpage> {
+class ListingCard extends StatelessWidget {
+  final dynamic listing; // Replace 'dynamic' with the actual type of 'listing'
+
+  const ListingCard({super.key, required this.listing});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              listing['title'] ?? 'Listing Title', // Replace with actual data
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 8),
+            Text(
+              listing['description'] ??
+                  'Listing Description', // Replace with actual data
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AgentListingsPageState extends State<AgentListingsPage> {
+  // ignore: prefer_typing_uninitialized_variables, non_constant_identifier_names
+  List<dynamic> property_items_list = []; // Initialize as an empty list
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Saved Properties',
-          style: TextStyle(fontSize: 18), // Reduced text size
-        ),
+        leading: null,
+        title: const Text('Agent Listings'),
+        centerTitle: true,
+
         actions: [
           IconButton(
             icon: Icon(Icons.filter_list),
@@ -100,9 +136,7 @@ class _SavedFirstpageState extends State<SavedFirstpage> {
             },
           ),
         ],
-        centerTitle: true,
       ),
-
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -133,47 +167,77 @@ class _SavedFirstpageState extends State<SavedFirstpage> {
                   } else {
                     if (propery_items_list.isEmpty) {
                       return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                        Icon(
-                          Icons.bookmark_border,
-                          size: 80,
-                          color: Colors.grey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.bookmark_border,
+                              size: 80,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              'No saved properties yet',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 16),
-                        Text(
-                          'No saved properties yet',
-                          style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey,
-                          ),
-                        ),
-                        ],
-                      ),
                       );
                     } else {
-                      return Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                        Expanded(
-                          child: ListView.builder(
-                          padding: const EdgeInsets.only(bottom: 24),
-                          itemCount: propery_items_list.length,
-                          itemBuilder: (context, i) => Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: PropertyCard(
-                            stay: propery_items_list[i],
+                      return CustomScrollView(
+                        slivers: [
+                          SliverPadding(
+                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                            sliver: SliverToBoxAdapter(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Your Profile',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  AgentProfileCard(),
+                                  const SizedBox(height: 16),
+                                  Row(
+                                    children: [
+                                      const Expanded(
+                                        child: Text(
+                                          'Your Active Listings',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {},
+                                        child: Text(
+                                          'See All',
+                                          style: TextStyle(
+                                            color: igBlue,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                ],
+                              ),
                             ),
                           ),
-                          ),
-                        ),
                         ],
-                      ),
                       );
                     }
                   }
+                  // Default return to handle all cases
                 },
               ),
             ),

@@ -28,7 +28,7 @@ class FirstPage extends StatelessWidget {
 
             child: GestureDetector(
               onTap: () {
-                Get.to(() => HomePage());
+                Get.offAll(() => HomePage());
               },
               child: Row(
                 children: [
@@ -53,7 +53,7 @@ class FirstPage extends StatelessWidget {
           SingleChildScrollView(
             child: Column(
               children: [
-                SizedBox(height: 80),
+                // SizedBox(height: 80),
                 SizedBox(
                   width: double.infinity,
                   height: getScreenPropotionHeight(
@@ -62,10 +62,25 @@ class FirstPage extends StatelessWidget {
                   ),
                   child: Center(
                     child: SvgPicture.asset(
-                      'assets/images/house.svg',
-                      height: getScreenPropotionHeight(100, size),
+                      'assets/images/splash1.svg',
+                      height: getScreenPropotionHeight(200, size),
                       width: getScreenPropotionHeight(200, size),
                     ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 1.0),
+                  child: Text(
+                    'Getting started',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                      fontFamily:
+                          'Montserrat', // Use a good font, ensure it's added in pubspec.yaml
+                      color: igText,
+                      letterSpacing: 1.2,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
                 Padding(

@@ -40,6 +40,8 @@ dependencies:
   avatar_glow: ^3.0.1
   flutter_svg: ^2.2.1
   touchable_opacity: ^1.2.0
+  card_loading: ^0.3.2
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
