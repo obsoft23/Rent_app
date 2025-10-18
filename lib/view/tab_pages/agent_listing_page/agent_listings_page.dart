@@ -2,8 +2,10 @@
 
 import 'package:card_loading/card_loading.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:rentapp/components/demo_lists.dart';
 import 'package:rentapp/theme/theme.dart';
+import 'package:rentapp/view/tab_pages/agent_listing_page/agent_all_listingspage.dart';
 import 'package:rentapp/view/tab_pages/favourites_page/enquiry_card.dart';
 
 class AgentListingsPage extends StatefulWidget {
@@ -45,7 +47,43 @@ class ListingCard extends StatelessWidget {
 
 class _AgentListingsPageState extends State<AgentListingsPage> {
   // ignore: prefer_typing_uninitialized_variables, non_constant_identifier_names
-  List<dynamic> property_items_list = []; // Initialize as an empty list
+  List<Map<String, dynamic>> property_items_list = [
+    {
+      'title': 'Modern Apartment',
+      'location': 'Downtown City',
+      'price': 1200,
+      'imageUrl':
+          'https://media.istockphoto.com/id/1403215723/photo/cuba-architecture.jpg?s=1024x1024&w=is&k=20&c=AeHZqcDXVv-3Z-xucGZHkn8TfUCOegh244hirZmw2xs=',
+    },
+    {
+      'title': 'Cozy Studio',
+      'location': 'Suburban Area',
+      'price': 800,
+      'imageUrl':
+          'https://media.istockphoto.com/id/847503126/photo/unfinished-building-on-construction-site.jpg?s=1024x1024&w=is&k=20&c=-MmVc4XoZ7u5lUpdbThKUIi7pVvM1U36zQiSI5IZpx4=',
+    },
+    {
+      'title': 'Luxury Villa',
+      'location': 'Beachside',
+      'price': 5000,
+      'imageUrl':
+          'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200',
+    },
+    {
+      'title': 'Spacious Condo',
+      'location': 'Uptown',
+      'price': 2000,
+      'imageUrl':
+          'https://media.istockphoto.com/id/847503126/photo/unfinished-building-on-construction-site.jpg?s=1024x1024&w=is&k=20&c=-MmVc4XoZ7u5lUpdbThKUIi7pVvM1U36zQiSI5IZpx4=',
+    },
+    {
+      'title': 'Rustic Cabin',
+      'location': 'Countryside',
+      'price': 600,
+      'imageUrl':
+          'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -196,7 +234,7 @@ class _AgentListingsPageState extends State<AgentListingsPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text(
-                                    'Your Profile',
+                                    'Your Agent Profile',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w700,
@@ -217,7 +255,9 @@ class _AgentListingsPageState extends State<AgentListingsPage> {
                                         ),
                                       ),
                                       GestureDetector(
-                                        onTap: () {},
+                                        onTap: () {
+                                          Get.to(() => AgentAllListingsPage());
+                                        },
                                         child: Text(
                                           'See All',
                                           style: TextStyle(
@@ -228,7 +268,103 @@ class _AgentListingsPageState extends State<AgentListingsPage> {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 12),
+                                  const SizedBox(height: 5),
+                                  GridView.builder(
+                                    shrinkWrap: true,
+                                    physics: NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                        SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 2,
+                                          crossAxisSpacing: 16,
+                                          mainAxisSpacing: 16,
+                                          childAspectRatio: 0.75,
+                                        ),
+                                    itemCount: property_items_list.length,
+                                    itemBuilder: (context, index) {
+                                      final property =
+                                          property_items_list[index];
+                                      return GestureDetector(
+                                        onTap: () {
+                                          // Handle card tap, e.g., navigate to details page
+                                        },
+                                        child: Card(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
+                                          ),
+                                          elevation: 4,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Expanded(
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      BorderRadius.vertical(
+                                                        top: Radius.circular(
+                                                          12,
+                                                        ),
+                                                      ),
+                                                  child: Image.network(
+                                                    property['imageUrl'] ??
+                                                        'https://via.placeholder.com/150',
+                                                    fit: BoxFit.cover,
+                                                    width: double.infinity,
+                                                  ),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.all(
+                                                  8.0,
+                                                ),
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      property['title'] ??
+                                                          'Property Title',
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                    SizedBox(height: 4),
+                                                    Text(
+                                                      property['location'] ??
+                                                          'Location',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        color: Colors.grey,
+                                                      ),
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                    ),
+                                                    SizedBox(height: 8),
+                                                    Text(
+                                                      '₦${property['price'] ?? '0'} / month',
+                                                      style: TextStyle(
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        color: Colors.green,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ],
                               ),
                             ),

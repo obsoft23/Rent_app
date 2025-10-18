@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage>
             label: 'Listings',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble_outline_rounded),
+            icon: Icon(Icons.send_outlined),
             label: 'Enquiries',
           ),
           BottomNavigationBarItem(

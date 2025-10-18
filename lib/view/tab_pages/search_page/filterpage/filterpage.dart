@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:rentapp/theme/theme.dart';
+import 'package:rentapp/view/tab_pages/search_page/search_page_widget_component/location_search_widget/location_searchpage.dart';
 
 class FiltersPage extends StatefulWidget {
   const FiltersPage({super.key});
@@ -158,18 +160,32 @@ class _FiltersPageState extends State<FiltersPage> {
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 120),
         children: [
           //const _SectionTitle('Location'),
-          TextField(
-            controller: _locationCtrl,
-            decoration: InputDecoration(
-              hintText: 'Search location',
-              prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(30),
-                borderSide: BorderSide.none,
+          GestureDetector(
+            onTap: () {
+              Get.to(
+                () => LocationSearchPage(initialLocation: _locationCtrl.text),
+              )?.then((selectedLocation) {
+                if (selectedLocation != null) {
+                  setState(() {
+                    _locationCtrl.text = selectedLocation;
+                  });
+                }
+              });
+            },
+            child: TextField(
+              controller: _locationCtrl,
+              decoration: InputDecoration(
+                hintText: 'Search location',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(30),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.grey[200],
+                contentPadding: const EdgeInsets.symmetric(vertical: 8),
               ),
-              filled: true,
-              fillColor: Colors.grey[200],
-              contentPadding: const EdgeInsets.symmetric(vertical: 8),
+              enabled: false, // Disable direct editing
             ),
           ),
           const SizedBox(height: 20),

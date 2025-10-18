@@ -10,7 +10,7 @@ final propery_items_list = <Stay>[
     badge: 'Hot this Month',
     guests: 3,
     imageUrl:
-        'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200',
+        'https://images.unsplash.com/photo-1661332618293-6b6204cd87fc?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1612',
   ),
   Stay(
     title: 'RetroFlat',
@@ -19,7 +19,7 @@ final propery_items_list = <Stay>[
     badge: 'Great Ratio',
     guests: 2,
     imageUrl:
-        'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200',
+        'https://media.istockphoto.com/id/847503126/photo/unfinished-building-on-construction-site.jpg?s=1024x1024&w=is&k=20&c=-MmVc4XoZ7u5lUpdbThKUIi7pVvM1U36zQiSI5IZpx4=',
   ),
 
   Stay(
@@ -29,7 +29,7 @@ final propery_items_list = <Stay>[
     badge: 'Great Ratio',
     guests: 2,
     imageUrl:
-        'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200',
+        'https://media.istockphoto.com/id/847503126/photo/unfinished-building-on-construction-site.jpg?s=1024x1024&w=is&k=20&c=-MmVc4XoZ7u5lUpdbThKUIi7pVvM1U36zQiSI5IZpx4=',
   ),
   Stay(
     title: 'RetroFlat',

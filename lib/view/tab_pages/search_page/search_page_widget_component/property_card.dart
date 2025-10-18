@@ -16,7 +16,7 @@ class DiscoverPage extends StatelessWidget {
         badge: 'Hot this Month',
         guests: 3,
         imageUrl:
-            'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200',
+            'https://media.istockphoto.com/id/1403215723/photo/cuba-architecture.jpg?s=1024x1024&w=is&k=20&c=AeHZqcDXVv-3Z-xucGZHkn8TfUCOegh244hirZmw2xs=',
       ),
       Stay(
         title: 'RetroFlat',
@@ -25,7 +25,7 @@ class DiscoverPage extends StatelessWidget {
         badge: 'Great Ratio',
         guests: 2,
         imageUrl:
-            'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=1200',
+            'https://media.istockphoto.com/id/1403215723/photo/cuba-architecture.jpg?s=1024x1024&w=is&k=20&c=AeHZqcDXVv-3Z-xucGZHkn8TfUCOegh244hirZmw2xs=',
       ), // Add more items if you want
     ];
 

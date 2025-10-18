@@ -67,7 +67,7 @@ class PropertyCard extends StatelessWidget {
           const SizedBox(height: 6),
           // Price
           Text(
-            '\$${stay.price}',
+            '₦${stay.price}',
             style: TextStyle(
               color: Colors.black.withOpacity(0.7),
               fontSize: 15.5,
@@ -151,7 +151,7 @@ class _RatingChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-            Icon(Icons.favorite, size: 14, color: Color(0xFFE1306C)),
+          Icon(Icons.favorite, size: 14, color: Colors.redAccent),
           const SizedBox(width: 4),
           Text(
             rating.toStringAsFixed(1),
