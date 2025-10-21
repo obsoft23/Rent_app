@@ -601,9 +601,27 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
                       padding: const EdgeInsets.only(top: 12),
                       child: Row(
                         children: [
-                          ElevatedButton(
+                          FilledButton(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Theme.of(context).primaryColor,
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 12,
+                                horizontal: 24,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              elevation: 4,
+                            ),
                             onPressed: details.onStepContinue,
-                            child: Text(_currentStep == 4 ? 'Review' : 'Next'),
+                            child: Text(
+                              _currentStep == 4 ? 'Preview' : 'Next',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                           const SizedBox(width: 8),
                           TextButton(
