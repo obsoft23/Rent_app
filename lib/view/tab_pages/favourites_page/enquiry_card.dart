@@ -1,4 +1,4 @@
-// ignore_for_file: unused_element, non_constant_identifier_names
+// ignore_for_file: unused_element
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,8 +6,6 @@ import 'package:rentapp/theme/theme.dart';
 import 'package:rentapp/view/tab_pages/agent_listing_page/add%20listings/agent_add_listings.dart';
 
 class AgentProfileCard extends StatelessWidget {
-  const AgentProfileCard({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -60,19 +58,11 @@ class AgentProfileCard extends StatelessWidget {
           Row(
             children: const [
               Expanded(
-                child: _StatTile(
-                  label: 'PROPERTY LIKES',
-                  value: '28',
-                  widget_icon: Icons.favorite,
-                ),
+                child: _StatTile(label: 'PROPERTY LIKES', value: '28'),
               ),
               SizedBox(width: 12),
               Expanded(
-                child: _StatTile(
-                  label: 'PROPERTY LISTED',
-                  value: '14',
-                  widget_icon: Icons.list,
-                ),
+                child: _StatTile(label: 'PROPERTY LISTED', value: '14'),
               ),
             ],
           ),
@@ -86,25 +76,16 @@ class AgentProfileCard extends StatelessWidget {
               height: 50,
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor,
-                borderRadius: BorderRadius.circular(
-                  22.5,
-                ), // Fully rounded edges
+                borderRadius: BorderRadius.circular(14),
               ),
               child: Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.add, color: Colors.white),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Add Listing',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  'Add Listing',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
                 ),
               ),
             ),
@@ -119,13 +100,7 @@ class _StatTile extends StatelessWidget {
   final String label;
   final String value;
 
-  const _StatTile({
-    required this.label,
-    required this.value,
-    required this.widget_icon,
-  });
-
-  final IconData widget_icon;
+  const _StatTile({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -145,7 +120,7 @@ class _StatTile extends StatelessWidget {
               color: const Color(0xFFF7F7FB),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(widget_icon, size: 20),
+            child: const Icon(Icons.home_outlined, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(

@@ -73,8 +73,8 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
   final sizeCtrl = TextEditingController();
   final yearBuiltCtrl = TextEditingController();
   final leaseTermsCtrl = TextEditingController();
-  final currencyList = const ['USD', 'EUR', 'GBP', 'NGN', 'GHS', 'KES'];
-  String currency = 'USD';
+  final currencyList = const ['NGN'];
+  String currency = 'NGN';
 
   final sizeUnits = const ['sqft', 'sqm', 'acre', 'hectare'];
   String sizeUnit = 'sqm';
@@ -84,6 +84,7 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
     'Semi-furnished',
     'Furnished',
   ];
+
   String? furnishing;
 
   final listingTypes = const ['Rent', 'Sale', 'Lease'];

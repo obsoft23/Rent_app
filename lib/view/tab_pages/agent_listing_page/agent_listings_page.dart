@@ -279,7 +279,9 @@ class _AgentListingsPageState extends State<AgentListingsPage> {
                                           mainAxisSpacing: 16,
                                           childAspectRatio: 0.75,
                                         ),
-                                    itemCount: property_items_list.length,
+                                    itemCount: property_items_list.length > 4
+                                        ? 4
+                                        : property_items_list.length,
                                     itemBuilder: (context, index) {
                                       final property =
                                           property_items_list[index];
@@ -364,6 +366,32 @@ class _AgentListingsPageState extends State<AgentListingsPage> {
                                         ),
                                       );
                                     },
+                                  ),
+                                  SizedBox(height: 16),
+                                  Row(
+                                    children: [
+                                      const Expanded(
+                                        child: Text(
+                                          'Your Drafted Listings',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Get.to(() => AgentAllListingsPage());
+                                        },
+                                        child: Text(
+                                          'See All',
+                                          style: TextStyle(
+                                            color: igBlue,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
