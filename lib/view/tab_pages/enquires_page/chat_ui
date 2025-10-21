@@ -1,0 +1,408 @@
+/*
+
+
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+
+/// Simple models and controllers using GetX for state management.
+/// Replace the sample data logic with your Firebase streams (Firestore / Realtime DB)
+/// when you hook up the backend.
+
+class Chat {
+  final String id;
+  final String name;
+  final String lastMessage;
+  final DateTime lastTimestamp;
+  final String avatarUrl;
+  final int unreadCount;
+
+  Chat({
+    required this.id,
+    required this.name,
+    required this.lastMessage,
+    required this.lastTimestamp,
+    this.avatarUrl = '',
+    this.unreadCount = 0,
+  });
+
+  Chat copyWith({
+    String? id,
+    String? name,
+    String? lastMessage,
+    DateTime? lastTimestamp,
+    String? avatarUrl,
+    int? unreadCount,
+  }) {
+    return Chat(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      lastMessage: lastMessage ?? this.lastMessage,
+      lastTimestamp: lastTimestamp ?? this.lastTimestamp,
+      avatarUrl: avatarUrl ?? this.avatarUrl,
+      unreadCount: unreadCount ?? this.unreadCount,
+    );
+  }
+}
+
+class Message {
+  final String id;
+  final String text;
+  final String senderId;
+  final DateTime time;
+  final bool isMe;
+
+  Message({
+    required this.id,
+    required this.text,
+    required this.senderId,
+    required this.time,
+    required this.isMe,
+  });
+}
+
+class ChatListController extends GetxController {
+  // Replace this with a stream from Firebase (e.g., snapshots) in production.
+  final RxList<Chat> chats = <Chat>[].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _loadSampleChats();
+    // TODO: subscribe to Firestore collection for realtime updates:
+    // FirebaseFirestore.instance.collection('chats').snapshots().listen(...)
+  }
+
+  void _loadSampleChats() {
+    chats.assignAll([
+      Chat(
+        id: '1',
+        name: 'Aisha Thompson',
+        lastMessage: 'Thanks — I will check and get back to you.',
+        lastTimestamp: DateTime.now().subtract(const Duration(minutes: 12)),
+        avatarUrl: '',
+        unreadCount: 2,
+      ),
+      Chat(
+        id: '2',
+        name: 'Property Owner',
+        lastMessage: 'The viewing is confirmed for tomorrow 3pm.',
+        lastTimestamp: DateTime.now().subtract(const Duration(hours: 3, minutes: 4)),
+        avatarUrl: '',
+        unreadCount: 0,
+      ),
+      Chat(
+        id: '3',
+        name: 'Support',
+        lastMessage: 'We have received your enquiry.',
+        lastTimestamp: DateTime.now().subtract(const Duration(days: 1, hours: 2)),
+        avatarUrl: '',
+        unreadCount: 0,
+      ),
+    ]);
+  }
+
+  void markRead(String chatId) {
+    final idx = chats.indexWhere((c) => c.id == chatId);
+    if (idx != -1) {
+      final updated = chats[idx].copyWith(unreadCount: 0);
+      chats[idx] = updated;
+    }
+  }
+}
+
+class ChatConversationController extends GetxController {
+  final String chatId;
+  final RxList<Message> messages = <Message>[].obs;
+  final TextEditingController inputController = TextEditingController();
+
+  ChatConversationController(this.chatId);
+
+  @override
+  void onInit() {
+    super.onInit();
+    _loadSampleMessages();
+    // TODO: load messages from Firebase and listen for realtime updates.
+  }
+
+  void _loadSampleMessages() {
+    messages.assignAll([
+      Message(
+        id: 'm1',
+        text: 'Hi, I’m interested in the 2-bedroom flat.',
+        senderId: 'user_1',
+        time: DateTime.now().subtract(const Duration(hours: 5, minutes: 3)),
+        isMe: false,
+      ),
+      Message(
+        id: 'm2',
+        text: 'Thanks for your message — can you share available dates for viewing?',
+        senderId: 'me',
+        time: DateTime.now().subtract(const Duration(hours: 4, minutes: 50)),
+        isMe: true,
+      ),
+      Message(
+        id: 'm3',
+        text: 'I’m available tomorrow afternoon.',
+        senderId: 'user_1',
+        time: DateTime.now().subtract(const Duration(hours: 4, minutes: 35)),
+        isMe: false,
+      ),
+    ]);
+  }
+
+  void sendMessage() {
+    final text = inputController.text.trim();
+    if (text.isEmpty) return;
+
+    final msg = Message(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      text: text,
+      senderId: 'me',
+      time: DateTime.now(),
+      isMe: true,
+    );
+
+    // In production: push to Firebase and let stream update the UI.
+    messages.add(msg);
+    inputController.clear();
+    // Optionally scroll the list to bottom via a ScrollController in the page.
+  }
+
+  @override
+  void onClose() {
+    inputController.dispose();
+    super.onClose();
+  }
+}
+
+class EnquiryFirstPage extends StatelessWidget {
+  EnquiryFirstPage({super.key});
+
+  final ChatListController _chatListController = Get.put(ChatListController());
+
+  String _formatTimestamp(DateTime ts) {
+    final now = DateTime.now();
+    if (now.difference(ts).inDays == 0) {
+      return DateFormat('h:mm a').format(ts);
+    } else if (now.difference(ts).inDays < 7) {
+      return DateFormat.E().format(ts); // Mon, Tue ...
+    } else {
+      return DateFormat.yMd().format(ts);
+    }
+  }
+
+  Widget _buildAvatar(Chat c) {
+    if (c.avatarUrl.isNotEmpty) {
+      return CircleAvatar(backgroundImage: NetworkImage(c.avatarUrl));
+    }
+    final initials = c.name.trim().split(' ').map((s) => s.isNotEmpty ? s[0] : '').take(2).join();
+    return CircleAvatar(child: Text(initials));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Enquiries'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications),
+            onPressed: () {},
+          ),
+        ],
+      ),
+      body: Obx(() {
+        final chats = _chatListController.chats;
+        if (chats.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.inbox, size: 80, color: Colors.grey[400]),
+                const SizedBox(height: 16),
+                Text('No Enquiries Yet', style: TextStyle(fontSize: 18, color: Colors.grey[600])),
+                const SizedBox(height: 8),
+                Text('You have no enquiries at the moment.',
+                    style: TextStyle(fontSize: 14, color: Colors.grey[500]), textAlign: TextAlign.center),
+              ],
+            ),
+          );
+        }
+
+        return ListView.separated(
+          itemCount: chats.length,
+          separatorBuilder: (_, __) => const Divider(height: 1),
+          itemBuilder: (context, index) {
+            final chat = chats[index];
+            return ListTile(
+              leading: _buildAvatar(chat),
+              title: Text(chat.name),
+              subtitle: Text(
+                chat.lastMessage,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(_formatTimestamp(chat.lastTimestamp), style: const TextStyle(fontSize: 12)),
+                  const SizedBox(height: 6),
+                  if (chat.unreadCount > 0)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(12)),
+                      child: Text('${chat.unreadCount}', style: const TextStyle(color: Colors.white, fontSize: 12)),
+                    ),
+                ],
+              ),
+              onTap: () {
+                _chatListController.markRead(chat.id);
+                Get.to(() => ChatConversationPage(chatId: chat.id, chatName: chat.name));
+              },
+            );
+          },
+        );
+      }),
+    );
+  }
+}
+
+class ChatConversationPage extends StatefulWidget {
+  final String chatId;
+  final String chatName;
+
+  const ChatConversationPage({required this.chatId, required this.chatName, super.key});
+
+  @override
+  State<ChatConversationPage> createState() => _ChatConversationPageState();
+}
+
+class _ChatConversationPageState extends State<ChatConversationPage> {
+  late final ChatConversationController _controller;
+  final ScrollController _scrollController = ScrollController();
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = Get.put(ChatConversationController(widget.chatId));
+    // scroll when messages change
+    ever(_controller.messages, (_) => _scrollToBottom());
+    // ensure read (if needed) - already handled when tapping list tile
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    // keep controller alive via GetX or remove if desired:
+    // Get.delete<ChatConversationController>(tag: widget.chatId);
+    super.dispose();
+  }
+
+  Widget _messageBubble(Message m) {
+    final isMe = m.isMe;
+    final align = isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start;
+    final bg = isMe ? Colors.blue.shade100 : Colors.grey.shade200;
+    final radius = BorderRadius.only(
+      topLeft: const Radius.circular(12),
+      topRight: const Radius.circular(12),
+      bottomLeft: Radius.circular(isMe ? 12 : 0),
+      bottomRight: Radius.circular(isMe ? 0 : 12),
+    );
+
+    return Column(
+      crossAxisAlignment: align,
+      children: [
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
+          decoration: BoxDecoration(color: bg, borderRadius: radius),
+          child: Text(m.text),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: Text(DateFormat('h:mm a').format(m.time), style: const TextStyle(fontSize: 11, color: Colors.grey)),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.chatName),
+        centerTitle: true,
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Obx(() {
+              final msgs = _controller.messages;
+              return ListView.builder(
+                controller: _scrollController,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                itemCount: msgs.length,
+                itemBuilder: (_, i) => Align(
+                  alignment: msgs[i].isMe ? Alignment.centerRight : Alignment.centerLeft,
+                  child: _messageBubble(msgs[i]),
+                ),
+              );
+            }),
+          ),
+          const Divider(height: 1),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _controller.inputController,
+                      textCapitalization: TextCapitalization.sentences,
+                      decoration: const InputDecoration(
+                        hintText: 'Type a message',
+                        border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(20)), borderSide: BorderSide.none),
+                        filled: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                      onSubmitted: (_) => _controller.sendMessage(),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Obx(() {
+                    final hasText = _controller.inputController.text.trim().isNotEmpty;
+                    return CircleAvatar(
+                      radius: 22,
+                      child: IconButton(
+                        icon: const Icon(Icons.send),
+                        color: Colors.white,
+                        onPressed: hasText ? _controller.sendMessage : null,
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+*/

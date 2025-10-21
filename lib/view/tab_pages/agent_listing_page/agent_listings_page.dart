@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 import 'package:rentapp/components/demo_lists.dart';
 import 'package:rentapp/theme/theme.dart';
 import 'package:rentapp/view/tab_pages/agent_listing_page/agent_all_listingspage.dart';
-import 'package:rentapp/view/tab_pages/favourites_page/enquiry_card.dart';
+import 'package:rentapp/view/tab_pages/agent_listing_page/agent_profile_card.dart';
 
 class AgentListingsPage extends StatefulWidget {
   const AgentListingsPage({super.key});

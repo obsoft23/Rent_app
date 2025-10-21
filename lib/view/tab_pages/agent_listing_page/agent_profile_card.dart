@@ -6,6 +6,8 @@ import 'package:rentapp/theme/theme.dart';
 import 'package:rentapp/view/tab_pages/agent_listing_page/add%20listings/agent_add_listings.dart';
 
 class AgentProfileCard extends StatelessWidget {
+  const AgentProfileCard({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(

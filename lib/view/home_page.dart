@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rentapp/theme/theme.dart';
 import 'package:rentapp/view/tab_pages/agent_listing_page/agent_listings_page.dart';
-import 'package:rentapp/view/tab_pages/favourites_page/enquiry_firstpage.dart';
+import 'package:rentapp/view/tab_pages/enquires_page/enquiry_firstpage.dart';
 import 'package:rentapp/view/tab_pages/saved_page/saved_firstpage.dart';
 import 'package:rentapp/view/tab_pages/search_page/searh_firstpage.dart';
 import 'package:rentapp/view/tab_pages/user_profile_page/profile_firstpage.dart';
