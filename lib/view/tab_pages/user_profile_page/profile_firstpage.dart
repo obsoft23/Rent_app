@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rentapp/theme/theme.dart';
 import 'package:rentapp/view/first_page.dart';
+import 'package:rentapp/view/tab_pages/user_profile_page/account_information.dart';
+import 'package:rentapp/view/tab_pages/user_profile_page/change_password_profilepage.dart';
 
 class ProfileFirstpage extends StatefulWidget {
   const ProfileFirstpage({super.key});
@@ -27,7 +29,7 @@ class _ProfileFirstpageState extends State<ProfileFirstpage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Check if the user is a guest
-              if (isGuestUser())
+              if (!isGuestUser())
                 Column(
                   children: [
                     // Guest UI
@@ -126,6 +128,18 @@ class _ProfileFirstpageState extends State<ProfileFirstpage> {
                       trailing: Icon(Icons.arrow_forward_ios),
                       onTap: () {
                         // Navigate to Account Information
+                        Get.to(
+                          () => AccountInformationPage(
+                            user: AccountInfo(
+                              id: '1',
+                              fullName: 'John Doe',
+                              email: 'johndoe@example.com',
+                              phone: '123-456-7890',
+                              avatarUrl: 'https://via.placeholder.com/150',
+                              joinedAt: DateTime.now(),
+                            ),
+                          ),
+                        );
                       },
                     ),
                     Divider(),
@@ -135,10 +149,11 @@ class _ProfileFirstpageState extends State<ProfileFirstpage> {
                       trailing: Icon(Icons.arrow_forward_ios),
                       onTap: () {
                         // Navigate to Change Password
+                        Get.to(() => ChangePasswordProfilePage());
                       },
                     ),
                     Divider(),
-                    ListTile(
+                    /* ListTile(
                       leading: Icon(Icons.notifications),
                       title: Text('Notifications'),
                       trailing: Icon(Icons.arrow_forward_ios),
@@ -146,7 +161,7 @@ class _ProfileFirstpageState extends State<ProfileFirstpage> {
                         // Navigate to Notifications
                       },
                     ),
-                    Divider(),
+                    Divider(),*/
                     ListTile(
                       leading: Icon(Icons.settings),
                       title: Text('Settings'),

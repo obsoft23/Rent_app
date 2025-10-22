@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage>
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.send_outlined),
-            label: 'Enquiries',
+            label: 'Messages',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_circle_outlined),

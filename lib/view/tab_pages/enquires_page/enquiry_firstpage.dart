@@ -747,9 +747,9 @@ class _ChatConversationPageState extends State<ChatConversationPage> {
                   for (var i = 0; i < msgs.length; i++) {
                     final m = msgs[i];
                     if (lastDate == null ||
-                        lastDate!.year != m.time.year ||
-                        lastDate!.month != m.time.month ||
-                        lastDate!.day != m.time.day) {
+                        lastDate.year != m.time.year ||
+                        lastDate.month != m.time.month ||
+                        lastDate.day != m.time.day) {
                       children.add(_dateChip(m.time, theme));
                       lastDate = m.time;
                     }
