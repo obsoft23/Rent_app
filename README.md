@@ -3,8 +3,10 @@
 Rent App Code Base Example is a modern Flutter application designed to connect property seekers with verified real-estate agents. The platform simplifies the rental process by allowing users to search, filter, and inquire about available apartments or homes directly through trusted agents. Built with a clean and intuitive interface, it supports real-time updates, secure messaging, and agent verification, ensuring transparency and trust in every transaction.
 
 Tech Stack: 
-FrontEnd Flutter, 
-Backend: Firebase for Auth and push, Rest APIs
+FrontEnd 
+Flutter, 
+Backend: 
+Firebase for Auth and push, Rest APIs
 
 - [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
 - [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
@@ -15,7 +17,7 @@ samples, guidance on mobile development, and a full API reference.
 # Rent_app
 <img width="320" height="640" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 11 58 22" src="https://github.com/user-attachments/assets/3110fe69-0c52-4804-8fa6-e8abd3ba32fc" /> <img wwidth="320" height="640" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 23 10 06" src="https://github.com/user-attachments/assets/8b8465c2-74e2-45dd-a71e-0d1e496842f1" />
 
-<img width="320" height="640" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 23 10 10" src="https://github.com/user-attachments/assets/97629386-09c8-4fec-ab28-7f289e6f8746" /> <img width="320" height="630" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 23 10 14" src="https://github.com/user-attachments/assets/683f67fb-5d8a-4a9c-93a9-4fcca23df7f0" />
+<img width="300" height="660" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 23 10 10" src="https://github.com/user-attachments/assets/97629386-09c8-4fec-ab28-7f289e6f8746" /> <img width="320" height="630" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 23 10 14" src="https://github.com/user-attachments/assets/683f67fb-5d8a-4a9c-93a9-4fcca23df7f0" />
 <img width="320" height="630"  alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 23 10 26" src="https://github.com/user-attachments/assets/4831c8e5-ae27-42dd-b388-34c7de19b7a5" />
 
 <img width="320" height="640" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 11 58 25" src="https://github.com/user-attachments/assets/bfa73de7-6013-4a7c-9344-196254bf0c8c" />
