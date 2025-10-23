@@ -361,6 +361,17 @@ Future<void> showListingActionsBottomSheet(
                 onToggleActive?.call();
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.bar_chart),
+              title: const Text(
+                'View Performance Metrics',
+                style: TextStyle(color: Colors.green),
+              ),
+              onTap: () {
+                Navigator.of(context).pop();
+                onDelete?.call();
+              },
+            ),
             const Divider(height: 0),
             ListTile(
               leading: const Icon(Icons.delete, color: Colors.red),

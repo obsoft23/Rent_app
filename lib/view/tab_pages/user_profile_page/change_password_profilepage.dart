@@ -3,14 +3,15 @@ import 'package:flutter/services.dart';
 
 class ChangePasswordProfilePage extends StatefulWidget {
   const ChangePasswordProfilePage({
-    Key? key,
+    super.key,
     this.onSubmit,
     this.title = 'Change Password',
-  }) : super(key: key);
+  });
 
   /// Optional callback to integrate with your auth layer.
   /// If not provided, a demo no-op implementation is used.
-  final Future<void> Function(String currentPassword, String newPassword)? onSubmit;
+  final Future<void> Function(String currentPassword, String newPassword)?
+  onSubmit;
 
   final String title;
 
@@ -19,12 +20,14 @@ class ChangePasswordProfilePage extends StatefulWidget {
     String title = 'Change Password',
   }) {
     return MaterialPageRoute(
-      builder: (_) => ChangePasswordProfilePage(onSubmit: onSubmit, title: title),
+      builder: (_) =>
+          ChangePasswordProfilePage(onSubmit: onSubmit, title: title),
     );
   }
 
   @override
-  State<ChangePasswordProfilePage> createState() => _ChangePasswordProfilePageState();
+  State<ChangePasswordProfilePage> createState() =>
+      _ChangePasswordProfilePageState();
 }
 
 class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
@@ -76,7 +79,9 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
     final hasLower = RegExp(r'[a-z]').hasMatch(value);
     final hasUpper = RegExp(r'[A-Z]').hasMatch(value);
     final hasDigit = RegExp(r'\d').hasMatch(value);
-    final hasSpecial = RegExp(r'[!@#\$%^&*(),.?":{}|<>_\-\[\]\\;/+=~`]').hasMatch(value);
+    final hasSpecial = RegExp(
+      r'[!@#\$%^&*(),.?":{}|<>_\-\[\]\\;/+=~`]',
+    ).hasMatch(value);
 
     if (lengthOK) score++;
     if (hasLower && hasUpper) score++;
@@ -91,7 +96,7 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
     if (v < 0.5) return Colors.orange;
     if (v < 0.75) return Colors.amber[700]!;
     return Colors.green;
-    }
+  }
 
   String _strengthLabel(double v) {
     if (v == 0) return '';
@@ -111,8 +116,10 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
     final value = v?.trim() ?? '';
     if (value.isEmpty) return 'Enter a new password';
     if (value.length < 8) return 'Use at least 8 characters';
-    if (!RegExp(r'[A-Z]').hasMatch(value)) return 'Add at least one uppercase letter';
-    if (!RegExp(r'[a-z]').hasMatch(value)) return 'Add at least one lowercase letter';
+    if (!RegExp(r'[A-Z]').hasMatch(value))
+      return 'Add at least one uppercase letter';
+    if (!RegExp(r'[a-z]').hasMatch(value))
+      return 'Add at least one lowercase letter';
     if (!RegExp(r'\d').hasMatch(value)) return 'Add at least one number';
     if (!RegExp(r'[!@#\$%^&*(),.?":{}|<>_\-\[\]\\;/+=~`]').hasMatch(value)) {
       return 'Add at least one special character';
@@ -137,7 +144,8 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
     FocusScope.of(context).unfocus();
     setState(() => _isSubmitting = true);
     try {
-      final handler = widget.onSubmit ?? _DemoChangePasswordService.updatePassword;
+      final handler =
+          widget.onSubmit ?? _DemoChangePasswordService.updatePassword;
       await handler(_currentCtrl.text.trim(), _newCtrl.text.trim());
       if (!mounted) return;
       HapticFeedback.mediumImpact();
@@ -159,16 +167,15 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final canSubmit = !_isSubmitting &&
+    final canSubmit =
+        !_isSubmitting &&
         (_formKey.currentState?.validate() ?? false) &&
         _passwordStrength >= 0.5;
 
     return WillPopScope(
       onWillPop: () async => !_isSubmitting,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
+        appBar: AppBar(title: Text(widget.title)),
         body: SafeArea(
           child: Form(
             key: _formKey,
@@ -178,7 +185,9 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
               children: [
                 Text(
                   'Secure your account by choosing a strong, unique password.',
-                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.hintColor,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -190,9 +199,16 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
                     labelText: 'Current password',
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
-                      onPressed: () => setState(() => _obscureCurrent = !_obscureCurrent),
-                      icon: Icon(_obscureCurrent ? Icons.visibility : Icons.visibility_off),
-                      tooltip: _obscureCurrent ? 'Show password' : 'Hide password',
+                      onPressed: () =>
+                          setState(() => _obscureCurrent = !_obscureCurrent),
+                      icon: Icon(
+                        _obscureCurrent
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      tooltip: _obscureCurrent
+                          ? 'Show password'
+                          : 'Hide password',
                     ),
                   ),
                   validator: _validateCurrent,
@@ -207,10 +223,14 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
                   decoration: InputDecoration(
                     labelText: 'New password',
                     prefixIcon: const Icon(Icons.lock_reset),
-                    helperText: 'Use at least 8 chars with upper, lower, number and symbol.',
+                    helperText:
+                        'Use at least 8 chars with upper, lower, number and symbol.',
                     suffixIcon: IconButton(
-                      onPressed: () => setState(() => _obscureNew = !_obscureNew),
-                      icon: Icon(_obscureNew ? Icons.visibility : Icons.visibility_off),
+                      onPressed: () =>
+                          setState(() => _obscureNew = !_obscureNew),
+                      icon: Icon(
+                        _obscureNew ? Icons.visibility : Icons.visibility_off,
+                      ),
                       tooltip: _obscureNew ? 'Show password' : 'Hide password',
                     ),
                   ),
@@ -233,9 +253,16 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
                     labelText: 'Confirm new password',
                     prefixIcon: const Icon(Icons.verified_user_outlined),
                     suffixIcon: IconButton(
-                      onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
-                      icon: Icon(_obscureConfirm ? Icons.visibility : Icons.visibility_off),
-                      tooltip: _obscureConfirm ? 'Show password' : 'Hide password',
+                      onPressed: () =>
+                          setState(() => _obscureConfirm = !_obscureConfirm),
+                      icon: Icon(
+                        _obscureConfirm
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                      ),
+                      tooltip: _obscureConfirm
+                          ? 'Show password'
+                          : 'Hide password',
                     ),
                   ),
                   validator: _validateConfirm,
@@ -249,10 +276,14 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
                   child: ElevatedButton.icon(
                     icon: _isSubmitting
                         ? const SizedBox(
-                            width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2),
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.check),
-                    label: Text(_isSubmitting ? 'Updating...' : 'Update Password'),
+                    label: Text(
+                      _isSubmitting ? 'Updating...' : 'Update Password',
+                    ),
                     onPressed: canSubmit ? _submit : null,
                   ),
                 ),
@@ -263,7 +294,9 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
                       : () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Use account recovery if you forgot your current password.'),
+                              content: Text(
+                                'Use account recovery if you forgot your current password.',
+                              ),
                             ),
                           );
                         },
@@ -281,11 +314,11 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
 
 class _PasswordStrengthMeter extends StatelessWidget {
   const _PasswordStrengthMeter({
-    Key? key,
+    super.key,
     required this.strength,
     required this.label,
     required this.color,
-  }) : super(key: key);
+  });
 
   final double strength;
   final String label;
@@ -307,17 +340,15 @@ class _PasswordStrengthMeter extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 6),
-        Text(
-          'Strength: $label',
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
+        Text('Strength: $label', style: Theme.of(context).textTheme.bodySmall),
       ],
     );
   }
 }
 
 class _RequirementsList extends StatelessWidget {
-  const _RequirementsList({Key? key, required this.newPassword}) : super(key: key);
+  const _RequirementsList({Key? key, required this.newPassword})
+    : super(key: key);
 
   final String newPassword;
 
@@ -325,7 +356,8 @@ class _RequirementsList extends StatelessWidget {
   bool get _upper => RegExp(r'[A-Z]').hasMatch(newPassword);
   bool get _lower => RegExp(r'[a-z]').hasMatch(newPassword);
   bool get _digit => RegExp(r'\d').hasMatch(newPassword);
-  bool get _special => RegExp(r'[!@#\$%^&*(),.?":{}|<>_\-\[\]\\;/+=~`]').hasMatch(newPassword);
+  bool get _special =>
+      RegExp(r'[!@#\$%^&*(),.?":{}|<>_\-\[\]\\;/+=~`]').hasMatch(newPassword);
 
   @override
   Widget build(BuildContext context) {
@@ -339,7 +371,10 @@ class _RequirementsList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Password requirements', style: Theme.of(context).textTheme.titleSmall),
+        Text(
+          'Password requirements',
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         const SizedBox(height: 8),
         ...items.map(
           (e) => Row(
@@ -368,7 +403,10 @@ class _ReqItem {
 /// Demo service used when no onSubmit is provided to the page.
 /// Replace this logic with your auth provider (e.g., FirebaseAuth reauth + updatePassword).
 class _DemoChangePasswordService {
-  static Future<void> updatePassword(String currentPassword, String newPassword) async {
+  static Future<void> updatePassword(
+    String currentPassword,
+    String newPassword,
+  ) async {
     await Future.delayed(const Duration(milliseconds: 900));
     // Simulate a very simple "current password" check for demo purposes only.
     // In production, you must reauthenticate the user securely on the server/auth provider.

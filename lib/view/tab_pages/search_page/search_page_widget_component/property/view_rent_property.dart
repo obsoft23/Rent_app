@@ -43,6 +43,7 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
     final property = widget.property;
 
     return Scaffold(
+      appBar: null,
       backgroundColor: const Color(0xFFF2F4FB),
       body: SafeArea(
         bottom: false,
@@ -64,7 +65,7 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
                 ),
               ),
               actions: [
-                Padding(
+                /* Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 6),
                   child: _RoundIcon(
                     icon: _isFav ? Icons.favorite : Icons.favorite_border,
@@ -72,7 +73,7 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
                     onTap: () => setState(() => _isFav = !_isFav),
                   ),
                 ),
-                const SizedBox(width: 6),
+                const SizedBox(width: 6),*/
               ],
               flexibleSpace: FlexibleSpaceBar(
                 collapseMode: CollapseMode.parallax,
@@ -147,7 +148,37 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
                 child: Column(
                   children: [
                     // Favourite button under the image
-                    Align(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: _RoundIcon(
+                            icon: _isFav
+                                ? Icons.favorite
+                                : Icons.favorite_border,
+                            iconColor: _isFav
+                                ? Colors.redAccent
+                                : Colors.black87,
+                            onTap: () => setState(() => _isFav = !_isFav),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                          child: _RoundIcon(
+                            icon: _isFav
+                                ? Icons.bookmark
+                                : Icons.bookmark_outline,
+                            iconColor: _isFav
+                                ? Colors.redAccent
+                                : Colors.black87,
+                            onTap: () => setState(() => _isFav = !_isFav),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    /*Align(
                       alignment: Alignment.centerLeft,
                       child: OutlinedButton.icon(
                         style: OutlinedButton.styleFrom(
@@ -172,7 +203,7 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
                         label: Text(_isFav ? 'Liked' : 'Like this property'),
                         onPressed: () => setState(() => _isFav = !_isFav),
                       ),
-                    ),
+                    ),*/
                     const SizedBox(height: 16),
 
                     _CardSection(

@@ -53,7 +53,57 @@ class AgentProfileCard extends StatelessWidget {
                   ],
                 ),
               ),
-              IconButton(onPressed: () {}, icon: const Icon(Icons.more_horiz)),
+              IconButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(16),
+                      ),
+                    ),
+                    builder: (context) {
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(height: 16),
+
+                            ListTile(
+                              leading: Icon(Icons.edit),
+                              title: Text('Edit Your Agent Profile'),
+                              onTap: () {
+                                // Add your edit profile logic here
+                                Navigator.pop(context);
+                              },
+                            ),
+                            ListTile(
+                              leading: Icon(Icons.bar_chart),
+                              title: Text('View Profile Metrics'),
+                              onTap: () {
+                                // Add your view metrics logic here
+                                Navigator.pop(context);
+                              },
+                            ),
+                            ListTile(
+                              leading: Icon(Icons.support_agent),
+                              title: Text('Contact Support About Your Profile'),
+                              onTap: () {
+                                // Add your contact support logic here
+                                Navigator.pop(context);
+                              },
+                            ),
+                            SizedBox(height: 16),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+                icon: const Icon(Icons.more_horiz),
+              ),
             ],
           ),
           const SizedBox(height: 16),

@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:rentapp/components/demo_lists.dart';
 import 'package:rentapp/theme/theme.dart';
 import 'package:rentapp/view/tab_pages/agent_listing_page/agent_all_listingspage.dart';
+import 'package:rentapp/view/tab_pages/agent_listing_page/agent_notifications/agent_notifications.dart';
 import 'package:rentapp/view/tab_pages/agent_listing_page/agent_profile_card.dart';
 
 class AgentListingsPage extends StatefulWidget {
@@ -95,9 +96,10 @@ class _AgentListingsPageState extends State<AgentListingsPage> {
 
         actions: [
           IconButton(
-            icon: Icon(Icons.filter_list),
+            icon: Icon(Icons.notifications_none_outlined),
             onPressed: () {
-              showModalBottomSheet(
+              Get.to(() => AgentNotificationsPage());
+              /*         showModalBottomSheet(
                 context: context,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
@@ -170,7 +172,7 @@ class _AgentListingsPageState extends State<AgentListingsPage> {
                     ),
                   );
                 },
-              );
+              );*/
             },
           ),
         ],
@@ -247,7 +249,7 @@ class _AgentListingsPageState extends State<AgentListingsPage> {
                                     children: [
                                       const Expanded(
                                         child: Text(
-                                          'Your Active Listings',
+                                          'Your Listings',
                                           style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.w700,

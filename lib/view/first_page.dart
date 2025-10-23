@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:rentapp/components/custom_button.dart';
 import 'package:rentapp/components/responsive.dart';
 import 'package:rentapp/theme/theme.dart';
+import 'package:rentapp/view/location_permission.dart';
 import 'package:rentapp/view/sign_up/signup.dart';
 import 'package:rentapp/view/home_page.dart';
 import 'package:rentapp/view/login/login.dart';
@@ -29,7 +30,7 @@ class FirstPage extends StatelessWidget {
 
             child: GestureDetector(
               onTap: () {
-                Get.offAll(() => HomePage());
+                Get.offAll(() => LocationPermissionPage());
               },
               child: Row(
                 children: [
