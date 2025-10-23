@@ -1,4 +1,4 @@
-<img width="1179" height="2556" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-23 at 21 16 08" src="https://github.com/user-attachments/assets/d863376b-c55d-42f6-857e-d231573f9278" /># Rentro
+# Rentro
 
 Rent App Code Base Example is a modern Flutter application designed to connect property seekers with verified real-estate agents. The platform simplifies the rental process by allowing users to search, filter, and inquire about available apartments or homes directly through trusted agents. Built with a clean and intuitive interface, it supports real-time updates, secure messaging, and agent verification, ensuring transparency and trust in every transaction.
 
