@@ -4,6 +4,7 @@ import 'package:rentapp/view/tab_pages/agent_listing_page/agent_listings_page.da
 import 'package:rentapp/view/tab_pages/enquires_page/enquiry_firstpage.dart';
 import 'package:rentapp/view/tab_pages/saved_page/saved_firstpage.dart';
 import 'package:rentapp/view/tab_pages/search_page/searh_firstpage.dart';
+import 'package:rentapp/view/tab_pages/trending_page/trending_page.dart';
 import 'package:rentapp/view/tab_pages/user_profile_page/profile_firstpage.dart';
 
 class HomePage extends StatefulWidget {
@@ -19,10 +20,14 @@ class _HomePageState extends State<HomePage>
   late AnimationController _controller;
   late Animation<double> _animation;
 
-  final List<Widget> _pages = [
+  // Define isAgent as a boolean variable
+  final bool isAgent = false; // Set to true if the user is an agent
+
+  List<Widget> get _pages => [
+    TrendingPage(),
     SearhFirstpage(),
     SavedFirstpage(),
-    AgentListingsPage(),
+    if (isAgent) AgentListingsPage(),
     EnquiryFirstPage(),
     ProfileFirstpage(),
   ];
@@ -71,11 +76,16 @@ class _HomePageState extends State<HomePage>
             icon: Icon(Icons.travel_explore_outlined),
             label: 'Explore',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Saved'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.storefront_outlined),
-            label: 'Listings',
+            icon: Icon(Icons.whatshot),
+            label: 'Trending',
           ),
+          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Saved'),
+          if (isAgent)
+            BottomNavigationBarItem(
+              icon: Icon(Icons.storefront_outlined),
+              label: 'Listings',
+            ),
           BottomNavigationBarItem(
             icon: Icon(Icons.send_outlined),
             label: 'Messages',

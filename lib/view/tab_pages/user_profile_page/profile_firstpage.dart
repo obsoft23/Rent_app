@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rentapp/theme/theme.dart';
-import 'package:rentapp/view/first_page.dart';
+import 'package:rentapp/landing_first_page.dart';
 import 'package:rentapp/view/tab_pages/user_profile_page/account_information.dart';
 import 'package:rentapp/view/tab_pages/user_profile_page/change_password_profilepage.dart';
 import 'package:rentapp/view/tab_pages/user_profile_page/policies_folder/help_support_page.dart';

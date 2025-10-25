@@ -4,8 +4,8 @@ import 'package:rentapp/components/responsive.dart';
 import 'dart:async';
 import 'package:get/get.dart';
 import 'package:rentapp/theme/theme.dart';
-import 'package:rentapp/view/first_page.dart';
-import 'package:rentapp/view/location_permission.dart';
+import 'package:rentapp/landing_first_page.dart';
+import 'package:rentapp/view/single_main_pages/location_permission.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

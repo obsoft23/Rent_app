@@ -24,7 +24,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rentapp/theme/theme.dart';
-import 'package:rentapp/view/home_page.dart';
+import 'package:rentapp/view/Home/home_page.dart';
 
 class AgentAddListingsPage extends StatefulWidget {
   const AgentAddListingsPage({

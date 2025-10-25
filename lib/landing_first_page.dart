@@ -1,15 +1,18 @@
 // ignore_for_file: unused_import
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:rentapp/components/custom_button.dart';
 import 'package:rentapp/components/responsive.dart';
 import 'package:rentapp/theme/theme.dart';
-import 'package:rentapp/view/location_permission.dart';
+import 'package:rentapp/view/single_main_pages/location_permission.dart';
 import 'package:rentapp/view/sign_up/signup.dart';
-import 'package:rentapp/view/home_page.dart';
+import 'package:rentapp/view/Home/home_page.dart';
 import 'package:rentapp/view/login/login.dart';
+import 'package:rentapp/view/tab_pages/user_profile_page/policies_folder/privacy_policy_page.dart';
+import 'package:rentapp/view/tab_pages/user_profile_page/policies_folder/terms_of_servicepage.dart';
 
 class FirstPage extends StatelessWidget {
   const FirstPage({super.key});
@@ -122,6 +125,11 @@ class FirstPage extends StatelessWidget {
                                     color: igText2,
                                     decoration: TextDecoration.underline,
                                   ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      // Handle privacy policy tap
+                                      Get.to(TermsOfServicePage());
+                                    },
                                 ),
                                 TextSpan(text: ' and '),
                                 TextSpan(
@@ -131,6 +139,11 @@ class FirstPage extends StatelessWidget {
                                     color: igText2,
                                     decoration: TextDecoration.underline,
                                   ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () {
+                                      // Handle privacy policy tap
+                                      Get.to(PrivacyPolicyPage());
+                                    },
                                 ),
                               ],
                             ),

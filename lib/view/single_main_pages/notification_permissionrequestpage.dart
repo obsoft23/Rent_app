@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:rentapp/theme/theme.dart';
-import 'package:rentapp/view/home_page.dart';
+import 'package:rentapp/view/Home/home_page.dart';
 
 class NotificationPermissionRequestPage extends StatefulWidget {
   const NotificationPermissionRequestPage({super.key});

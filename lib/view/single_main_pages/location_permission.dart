@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:rentapp/theme/theme.dart';
-import 'package:rentapp/view/first_page.dart';
-import 'package:rentapp/view/home_page.dart';
-import 'package:rentapp/view/notification_permissionrequestpage.dart';
+import 'package:rentapp/landing_first_page.dart';
+import 'package:rentapp/view/Home/home_page.dart';
+import 'package:rentapp/view/single_main_pages/notification_permissionrequestpage.dart';
 
 class LocationPermissionPage extends StatefulWidget {
   const LocationPermissionPage({super.key});
