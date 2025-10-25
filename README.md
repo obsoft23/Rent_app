@@ -8,6 +8,13 @@ Flutter,
 Backend: 
 Firebase for Auth and push, Rest APIs
 
+Node JS(Socket IO, express Js) - chat messaging / firebase 
+REST API(Laravel)
+Svg resource (undraw.co)
+Google Maps Geolocator
+SQL , NGinx
+AWS
+
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
