@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rentapp/theme/theme.dart';
 import 'package:rentapp/view/tab_pages/agent_listing_page/add%20listings/agent_add_listings.dart';
+import 'package:rentapp/view/tab_pages/agent_listing_page/agent_profile/contact_support.dart';
 import 'package:rentapp/view/tab_pages/agent_listing_page/agent_profile/edit_agent_profile.dart';
 import 'package:rentapp/view/tab_pages/agent_listing_page/agent_profile/view_agent_metrics.dart';
 
@@ -97,6 +98,7 @@ class AgentProfileCard extends StatelessWidget {
                               onTap: () {
                                 // Add your contact support logic here
                                 Navigator.pop(context);
+                                Get.to(() => ContactSupportPage());
                               },
                             ),
                             SizedBox(height: 16),

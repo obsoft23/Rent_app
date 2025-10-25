@@ -21,8 +21,10 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:rentapp/theme/theme.dart';
+import 'package:rentapp/view/home_page.dart';
 
 class AgentAddListingsPage extends StatefulWidget {
   const AgentAddListingsPage({
@@ -540,7 +542,7 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
                       const SizedBox(height: 8),
                       // Body
                       Text(
-                        'You have unsaved changes. If you leave now, your changes will be lost.',
+                        'You have unsaved changes. If you leave now, your changes will be lost and be taken back to home page.',
                         textAlign: TextAlign.center,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
@@ -584,7 +586,7 @@ class _AgentAddListingsPageState extends State<AgentAddListingsPage> {
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
-                              onPressed: () => Navigator.of(context).pop(true),
+                              onPressed: () => Get.offAll(HomePage()),
                             ),
                           ),
                         ],

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 class EditAgentProfilePage extends StatefulWidget {
-  const EditAgentProfilePage({Key? key}) : super(key: key);
+  const EditAgentProfilePage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _EditAgentProfilePageState createState() => _EditAgentProfilePageState();
 }
 

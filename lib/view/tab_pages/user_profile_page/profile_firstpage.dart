@@ -4,6 +4,8 @@ import 'package:rentapp/theme/theme.dart';
 import 'package:rentapp/view/first_page.dart';
 import 'package:rentapp/view/tab_pages/user_profile_page/account_information.dart';
 import 'package:rentapp/view/tab_pages/user_profile_page/change_password_profilepage.dart';
+import 'package:rentapp/view/tab_pages/user_profile_page/policies_folder/help_support_page.dart';
+import 'package:rentapp/view/tab_pages/user_profile_page/user_personal_settings.dart';
 
 class ProfileFirstpage extends StatefulWidget {
   const ProfileFirstpage({super.key});
@@ -21,7 +23,46 @@ class _ProfileFirstpageState extends State<ProfileFirstpage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('User Profile'), centerTitle: true),
+      appBar: AppBar(
+        title: Text('User Profile'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Logout Confirmation'),
+                    content: Text('Are you sure you want to logout?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                          Get.offAll(
+                            () => FirstPage(),
+                          ); // Navigate to FirstPage
+                        },
+                        child: Text(
+                          'Logout',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -168,6 +209,7 @@ class _ProfileFirstpageState extends State<ProfileFirstpage> {
                       trailing: Icon(Icons.arrow_forward_ios),
                       onTap: () {
                         // Navigate to Settings
+                        Get.to(() => UserPersonalSettingsPage());
                       },
                     ),
                     Divider(),
@@ -177,12 +219,14 @@ class _ProfileFirstpageState extends State<ProfileFirstpage> {
                       trailing: Icon(Icons.arrow_forward_ios),
                       onTap: () {
                         // Navigate to Help & Support
+                        Get.to(() => HelpSupportPage());
                       },
                     ),
-                    Divider(),
+
                     SizedBox(height: 24),
+
                     // Logout Button
-                    ElevatedButton.icon(
+                    /* ElevatedButton.icon(
                       onPressed: () {
                         // Handle Logout
                       },
@@ -196,7 +240,7 @@ class _ProfileFirstpageState extends State<ProfileFirstpage> {
                           vertical: 12,
                         ),
                       ),
-                    ),
+                    ),*/
                   ],
                 ),
             ],
