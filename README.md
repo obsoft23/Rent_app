@@ -16,6 +16,9 @@ For help getting started with Flutter development, view the
 samples, guidance on mobile development, and a full API reference.
 # Rent_app
 <img width="300" height="800" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 11 58 22" src="https://github.com/user-attachments/assets/3110fe69-0c52-4804-8fa6-e8abd3ba32fc" />
+<img width="290" height="840" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-25 at 21 04 18" src="https://github.com/user-attachments/assets/a46e1272-4f05-4cf4-9b85-df018be8ee8f" />
+
+
 <img width="300" height="800" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-23 at 21 16 08" src="https://github.com/user-attachments/assets/0c91a393-c6b0-4d31-bb1d-9e58975776f5" />
 
 <img width="300" height="800" alt="Simulator Screenshot - iPhone 15 Pro - 2025-10-18 at 23 10 06" src="https://github.com/user-attachments/assets/8b8465c2-74e2-45dd-a71e-0d1e496842f1" />
