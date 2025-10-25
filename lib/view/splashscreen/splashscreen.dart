@@ -32,20 +32,30 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: igBlue,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // App logo SVG asset in the center
-            SizedBox(
-              height: 180,
-              width: 150,
-              child: SvgPicture.asset('assets/images/house2.svg'),
-            ),
-            const SizedBox(height: 16),
-            // Loading GIF below the logo
-            Image.asset('assets/images/loading.gif', height: 23, width: 23),
-          ],
+      body: Container(
+        width: double.infinity,
+        decoration: const BoxDecoration(
+          /* gradient: LinearGradient(
+            colors: [igBlue, Color(0xFF0B1220)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),*/
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // App logo SVG asset in the center
+              SizedBox(
+                height: 180,
+                width: 150,
+                child: SvgPicture.asset('assets/images/house2.svg'),
+              ),
+              const SizedBox(height: 16),
+              // Loading GIF below the logo
+              Image.asset('assets/images/loading.gif', height: 23, width: 23),
+            ],
+          ),
         ),
       ),
     );

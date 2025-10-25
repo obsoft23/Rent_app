@@ -79,14 +79,13 @@ class FirstPage extends StatelessWidget {
                   ),
                   SizedBox(height: 20),
                   Text(
-                    'Getting started',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                      color: igText,
-                      letterSpacing: 1.1,
-                    ),
+                    "Getting Started",
                     textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 27,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
                   SizedBox(height: 16),
                   Padding(
@@ -114,7 +113,7 @@ class FirstPage extends StatelessWidget {
                               children: [
                                 TextSpan(
                                   text:
-                                      "By skipping, you accept our company’s ",
+                                      "By skipping this page, you accept our company’s ",
                                 ),
                                 TextSpan(
                                   text: 'Term & conditions',

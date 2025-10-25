@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rentapp/theme/theme.dart';
 import 'package:rentapp/view/tab_pages/agent_listing_page/add%20listings/agent_add_listings.dart';
+import 'package:rentapp/view/tab_pages/agent_listing_page/agent_profile/edit_agent_profile.dart';
+import 'package:rentapp/view/tab_pages/agent_listing_page/agent_profile/view_agent_metrics.dart';
 
 class AgentProfileCard extends StatelessWidget {
   const AgentProfileCard({super.key});
@@ -77,6 +79,7 @@ class AgentProfileCard extends StatelessWidget {
                               onTap: () {
                                 // Add your edit profile logic here
                                 Navigator.pop(context);
+                                Get.to(() => EditAgentProfilePage());
                               },
                             ),
                             ListTile(
@@ -85,6 +88,7 @@ class AgentProfileCard extends StatelessWidget {
                               onTap: () {
                                 // Add your view metrics logic here
                                 Navigator.pop(context);
+                                Get.to(() => ViewAgentMetricsPage());
                               },
                             ),
                             ListTile(
@@ -110,11 +114,19 @@ class AgentProfileCard extends StatelessWidget {
           Row(
             children: const [
               Expanded(
-                child: _StatTile(label: 'PROPERTY LIKES', value: '28'),
+                child: _StatTile(
+                  label: 'PROPERTY LIKES',
+                  value: '28',
+                  icon: Icons.favorite,
+                ),
               ),
               SizedBox(width: 12),
               Expanded(
-                child: _StatTile(label: 'PROPERTY LISTED', value: '14'),
+                child: _StatTile(
+                  label: 'PROPERTY LISTED',
+                  value: '14',
+                  icon: Icons.home,
+                ),
               ),
             ],
           ),
@@ -122,7 +134,7 @@ class AgentProfileCard extends StatelessWidget {
           InkWell(
             onTap: () {
               // Handle add listing action
-              Get.to(() => AgentAddListingsPage());
+              Get.offAll(() => AgentAddListingsPage());
             },
             child: Container(
               height: 50,
@@ -151,8 +163,13 @@ class AgentProfileCard extends StatelessWidget {
 class _StatTile extends StatelessWidget {
   final String label;
   final String value;
+  final IconData icon;
 
-  const _StatTile({required this.label, required this.value});
+  const _StatTile({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +189,7 @@ class _StatTile extends StatelessWidget {
               color: const Color(0xFFF7F7FB),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.home_outlined, size: 20),
+            child: Icon(icon, size: 20),
           ),
           const SizedBox(width: 12),
           Expanded(

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AgentNotificationsPage extends StatelessWidget {
+  const AgentNotificationsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +28,7 @@ class NotificationTile extends StatelessWidget {
   final String message;
   final String timeAgo;
 
-  const NotificationTile({
+  const NotificationTile({super.key, 
     required this.profileImage,
     required this.message,
     required this.timeAgo,

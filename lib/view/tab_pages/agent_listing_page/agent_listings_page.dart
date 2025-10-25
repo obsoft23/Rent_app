@@ -235,14 +235,14 @@ class _AgentListingsPageState extends State<AgentListingsPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  const Text(
+                                 /* const Text(
                                     'Your Agent Profile',
                                     style: TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.w700,
                                     ),
-                                  ),
-                                  const SizedBox(height: 12),
+                                  ),*/
+                                  const SizedBox(height: 0),
                                   AgentProfileCard(),
                                   const SizedBox(height: 16),
                                   Row(

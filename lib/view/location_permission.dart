@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:rentapp/theme/theme.dart';
 import 'package:rentapp/view/first_page.dart';
 import 'package:rentapp/view/home_page.dart';
+import 'package:rentapp/view/notification_permissionrequestpage.dart';
 
 class LocationPermissionPage extends StatefulWidget {
   const LocationPermissionPage({super.key});
@@ -73,7 +74,7 @@ class _LocationPermissionPageState extends State<LocationPermissionPage> {
               ElevatedButton(
                 onPressed: () {
                   // Handle location permission logic here
-                  Get.offAll(() => HomePage());
+                  Get.offAll(() => NotificationPermissionRequestPage());
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: igBlue,

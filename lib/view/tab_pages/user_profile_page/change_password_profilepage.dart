@@ -116,10 +116,12 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
     final value = v?.trim() ?? '';
     if (value.isEmpty) return 'Enter a new password';
     if (value.length < 8) return 'Use at least 8 characters';
-    if (!RegExp(r'[A-Z]').hasMatch(value))
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
       return 'Add at least one uppercase letter';
-    if (!RegExp(r'[a-z]').hasMatch(value))
+    }
+    if (!RegExp(r'[a-z]').hasMatch(value)) {
       return 'Add at least one lowercase letter';
+    }
     if (!RegExp(r'\d').hasMatch(value)) return 'Add at least one number';
     if (!RegExp(r'[!@#\$%^&*(),.?":{}|<>_\-\[\]\\;/+=~`]').hasMatch(value)) {
       return 'Add at least one special character';
@@ -314,7 +316,6 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
 
 class _PasswordStrengthMeter extends StatelessWidget {
   const _PasswordStrengthMeter({
-    super.key,
     required this.strength,
     required this.label,
     required this.color,
@@ -347,8 +348,7 @@ class _PasswordStrengthMeter extends StatelessWidget {
 }
 
 class _RequirementsList extends StatelessWidget {
-  const _RequirementsList({Key? key, required this.newPassword})
-    : super(key: key);
+  const _RequirementsList({required this.newPassword});
 
   final String newPassword;
 
