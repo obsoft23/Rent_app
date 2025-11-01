@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:rentapp/view/tab_pages/user_profile_page/policies_folder/privacy_policy_page.dart';
 import 'package:rentapp/view/tab_pages/user_profile_page/policies_folder/terms_of_servicepage.dart';
 

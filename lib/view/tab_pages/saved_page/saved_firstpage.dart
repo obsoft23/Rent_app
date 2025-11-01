@@ -133,44 +133,61 @@ class _SavedFirstpageState extends State<SavedFirstpage> {
                   } else {
                     if (propery_items_list.isEmpty) {
                       return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                        Icon(
-                          Icons.bookmark_border,
-                          size: 80,
-                          color: Colors.grey,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.bookmark_border,
+                              size: 80,
+                              color: Colors.grey,
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              'No saved properties yet',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 16),
-                        Text(
-                          'No saved properties yet',
-                          style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey,
-                          ),
-                        ),
-                        ],
-                      ),
                       );
                     } else {
                       return Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                        Expanded(
-                          child: ListView.builder(
-                          padding: const EdgeInsets.only(bottom: 24),
-                          itemCount: propery_items_list.length,
-                          itemBuilder: (context, i) => Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: PropertyCard(
-                            stay: propery_items_list[i],
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            /* Expanded(
+              child: GridView.builder(
+                padding: const EdgeInsets.only(bottom: 24),
+                itemCount: propery_items_list.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 18,
+                  crossAxisSpacing: 14,
+                  childAspectRatio: 0.72,
+                ),
+                itemBuilder: (context, i) =>
+                    PropertyCard(stay: propery_items_list[i]),
+              ),
+            ), */
+                            Expanded(
+                              child: GridView.builder(
+                                padding: const EdgeInsets.only(bottom: 24),
+                                itemCount: propery_items_list.length,
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      mainAxisSpacing: 18,
+                                      crossAxisSpacing: 14,
+                                      childAspectRatio: 0.72,
+                                    ),
+                                itemBuilder: (context, i) =>
+                                    PropertyCard(stay: propery_items_list[i]),
+                              ),
                             ),
-                          ),
-                          ),
+                          ],
                         ),
-                        ],
-                      ),
                       );
                     }
                   }

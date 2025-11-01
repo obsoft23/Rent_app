@@ -29,8 +29,14 @@ flutter_ios_podfile_setup
 
 target 'Runner' do
   use_frameworks!
+  use_modular_headers!
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+
+  # Use pre-built Firestore SDK for faster build times
+  # This matches the Firebase SDK version (12.2.0) expected by your Flutter plugins
+  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '12.2.0'
+
   target 'RunnerTests' do
     inherit! :search_paths
   end

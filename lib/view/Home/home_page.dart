@@ -24,10 +24,10 @@ class _HomePageState extends State<HomePage>
   final bool isAgent = false; // Set to true if the user is an agent
 
   List<Widget> get _pages => [
-    TrendingPage(),
+    // TrendingPage(),
     SearhFirstpage(),
     SavedFirstpage(),
-    if (isAgent) AgentListingsPage(),
+    if (!isAgent) AgentListingsPage(),
     EnquiryFirstPage(),
     ProfileFirstpage(),
   ];
@@ -72,16 +72,16 @@ class _HomePageState extends State<HomePage>
         selectedItemColor: igBlue, // Color for selected icon
         unselectedItemColor: igText2, // Color for unselected icons
         items: [
+          /*  BottomNavigationBarItem(
+            icon: Icon(Icons.travel_explore_outlined),
+            label: 'Explore',
+          ),*/
           BottomNavigationBarItem(
             icon: Icon(Icons.travel_explore_outlined),
             label: 'Explore',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.whatshot),
-            label: 'Trending',
-          ),
           BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Saved'),
-          if (isAgent)
+          if (!isAgent)
             BottomNavigationBarItem(
               icon: Icon(Icons.storefront_outlined),
               label: 'Listings',

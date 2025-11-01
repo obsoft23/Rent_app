@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:rentapp/components/demo_lists.dart';
 import 'package:rentapp/components/property_card_grid.dart';
+import 'package:rentapp/components/property_card_listview.dart';
 import 'package:rentapp/components/shadow_card.dart';
 import 'package:rentapp/components/socials_button.dart';
 import 'package:rentapp/theme/theme.dart';
@@ -23,10 +24,12 @@ class SearhFirstpage extends StatefulWidget {
 }
 
 class _SearhFirstpageState extends State<SearhFirstpage> {
+  final Set<int> _favorites = {};
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        // backgroundColor: igBlue,
         leading: null,
         elevation: 0.5,
         centerTitle: false,
@@ -34,10 +37,20 @@ class _SearhFirstpageState extends State<SearhFirstpage> {
             SystemUiOverlayStyle.dark, // dark status icons on light bg
         toolbarHeight: 64,
         titleSpacing: 16,
-        title: const Text(
+        title:
+            const /*Text(
           'Search & Discover',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
-        ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+        )*/ Row(
+              children: [
+                Text(
+                  'Hot Properties Around You',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(width: 8),
+                Icon(Icons.whatshot, color: Colors.red),
+              ],
+            ),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
             bottom: Radius.circular(24), // Curved bottom edge
@@ -91,44 +104,50 @@ class _SearhFirstpageState extends State<SearhFirstpage> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Padding(
-              padding: EdgeInsets.only(top: 16, bottom: 8),
-              child: Row(
-                children: [
-                  Text(
-                    'Hot Properties Around You',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(width: 8),
-                  Icon(
-                    Icons.local_fire_department,
-                    color: Colors.red,
-                    size: 24,
-                  ),
-                ],
+      extendBodyBehindAppBar: false,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+
+          /* Expanded(
+            child: GridView.builder(
+              padding: const EdgeInsets.only(bottom: 24),
+              itemCount: propery_items_list.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 18,
+                crossAxisSpacing: 14,
+                childAspectRatio: 0.72,
               ),
+              itemBuilder: (context, i) =>
+                  PropertyCard(stay: propery_items_list[i]),
             ),
-            Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.only(bottom: 24),
-                itemCount: propery_items_list.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 18,
-                  crossAxisSpacing: 14,
-                  childAspectRatio: 0.72,
-                ),
-                itemBuilder: (context, i) =>
-                    PropertyCard(stay: propery_items_list[i]),
-              ),
+          ), */
+          Expanded(
+            child: ListView.builder(
+              itemCount: list_view_properties.length,
+              itemBuilder: (context, index) {
+                final property = list_view_properties[index];
+                final isFavorite = _favorites.contains(property['id']);
+
+                return PropertyListViewCard(
+                  property: property,
+                  isFavorite: isFavorite,
+                  onFavoriteToggle: () {
+                    setState(() {
+                      if (isFavorite) {
+                        _favorites.remove(property['id']);
+                      } else {
+                        _favorites.add(property['id']);
+                      }
+                    });
+                  },
+                );
+              },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

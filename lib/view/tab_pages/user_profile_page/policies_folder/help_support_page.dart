@@ -1,7 +1,11 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:rentapp/theme/theme.dart';
 
 class HelpSupportPage extends StatefulWidget {
+  const HelpSupportPage({super.key});
+
   @override
   _HelpSupportPageState createState() => _HelpSupportPageState();
 }
@@ -30,7 +34,7 @@ class _HelpSupportPageState extends State<HelpSupportPage> {
 
   @override
   Widget build(BuildContext context) {
-    String? _priority;
+    String? priority;
     return Scaffold(
       appBar: AppBar(title: Text('Help & Support')),
       body: Padding(
@@ -77,13 +81,13 @@ class _HelpSupportPageState extends State<HelpSupportPage> {
                 },
               ),
               DropdownButtonFormField<String>(
-                initialValue: _priority,
+                initialValue: priority,
                 items: const [
                   DropdownMenuItem(value: 'Low', child: Text('Low')),
                   DropdownMenuItem(value: 'Medium', child: Text('Medium')),
                   DropdownMenuItem(value: 'High', child: Text('High')),
                 ],
-                onChanged: (v) => setState(() => _priority = v ?? 'Medium'),
+                onChanged: (v) => setState(() => priority = v ?? 'Medium'),
                 decoration: const InputDecoration(
                   labelText: 'Priority',
                   prefixIcon: Icon(Icons.priority_high),

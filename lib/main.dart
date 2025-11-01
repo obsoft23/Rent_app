@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/state_manager.dart';
+import 'package:rentapp/components/property_card_listview.dart';
 import 'package:rentapp/firebase_options.dart';
 import 'package:rentapp/theme/theme.dart';
 import 'package:rentapp/landing_first_page.dart';

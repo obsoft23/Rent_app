@@ -21,6 +21,7 @@ class _TrendingPageState extends State<TrendingPage> {
   final _searchController = TextEditingController();
   final List<Post> _posts = [];
   bool _isLoading = false;
+  // ignore: unused_field
   bool _isRefreshing = false;
   bool _hasMore = true;
   int _page = 0;
@@ -764,6 +765,7 @@ class _VideoPlayerView extends StatefulWidget {
 class _VideoPlayerViewState extends State<_VideoPlayerView> {
   VideoPlayerController? _controller;
   bool _muted = true;
+  // ignore: unused_field
   bool _showControls = true;
 
   @override
