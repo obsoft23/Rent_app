@@ -4,11 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:rentapp/services/firebase_service.dart';
 
 class ProfileController extends GetxController {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  // Use FirebaseService for lazy initialization
+  FirebaseAuth get _auth => FirebaseService.instance.auth;
+  FirebaseFirestore get _firestore => FirebaseService.instance.firestore;
+  FirebaseStorage get _storage => FirebaseService.instance.storage;
   final ImagePicker _picker = ImagePicker();
 
   var isLoading = false.obs;
@@ -55,10 +57,10 @@ class ProfileController extends GetxController {
       print('✅ Image uploaded successfully: $downloadURL');
 
       // Update Firestore user document
-      await _firestore.collection('users').doc(user.uid).update({
+      await _firestore.collection('users').doc(user.uid).set({
         'photoURL': downloadURL,
         'updatedAt': FieldValue.serverTimestamp(),
-      });
+      }, SetOptions(merge: true));
 
       // Update Firebase Auth profile
       await user.updatePhotoURL(downloadURL);
@@ -86,10 +88,10 @@ class ProfileController extends GetxController {
       }
 
       // Update Firestore
-      await _firestore.collection('users').doc(user.uid).update({
+      await _firestore.collection('users').doc(user.uid).set({
         'displayName': displayName,
         'updatedAt': FieldValue.serverTimestamp(),
-      });
+      }, SetOptions(merge: true));
 
       // Update Firebase Auth profile
       await user.updateDisplayName(displayName);
@@ -115,10 +117,10 @@ class ProfileController extends GetxController {
         throw Exception('No user logged in');
       }
 
-      await _firestore.collection('users').doc(user.uid).update({
+      await _firestore.collection('users').doc(user.uid).set({
         'phoneNumber': phoneNumber,
         'updatedAt': FieldValue.serverTimestamp(),
-      });
+      }, SetOptions(merge: true));
 
       print('✅ Phone number updated: $phoneNumber');
 

@@ -18,11 +18,13 @@ import 'package:flutter/services.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase lazily (only when needed)
-  // This speeds up app startup significantly
-  // Firebase will be initialized when first accessed via FirebaseService.instance
+  // Initialize Firebase through FirebaseService (production)
+  await FirebaseService.instance.initialize();
 
-  // Initialize AuthController (also lazy)
+  // For development with emulators, uncomment this instead:
+  // await FirebaseService.instance.initializeWithEmulators();
+
+  // Initialize AuthController
   Get.put(AuthController());
 
   runApp(const MyApp());

@@ -8,10 +8,12 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:rentapp/view/Home/home_page.dart';
 import 'package:rentapp/view/single_main_pages/location_permission.dart';
 import 'package:rentapp/view/single_main_pages/notification_permissionrequestpage.dart';
+import 'package:rentapp/services/firebase_service.dart';
 
 class AuthController extends GetxController {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  // Use FirebaseService for lazy initialization
+  FirebaseAuth get _auth => FirebaseService.instance.auth;
+  FirebaseFirestore get _firestore => FirebaseService.instance.firestore;
 
   // Observable for loading state
   var isLoading = false.obs;

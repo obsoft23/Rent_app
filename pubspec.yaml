@@ -50,6 +50,7 @@ dependencies:
   firebase_auth: ^6.1.2
   firebase_storage: ^13.0.4
   youtube_player_flutter: ^9.1.3
+  font_awesome_flutter: ^10.4.0
 
 dev_dependencies:
   flutter_test:

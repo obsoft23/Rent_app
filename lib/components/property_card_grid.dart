@@ -13,7 +13,7 @@ class PropertyCard extends StatelessWidget {
     return InkWell(
       onTap: () {
         //  Get.to(() => PropertyDetailsPage(stay: stay, property: null,));
-        Navigator.push(
+        /* Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) => PropertyDetailsPage(
@@ -31,7 +31,7 @@ class PropertyCard extends StatelessWidget {
               ),
             ),
           ),
-        );
+        );*/
       },
       borderRadius: radius,
       child: Column(

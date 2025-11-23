@@ -1,9 +1,70 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:rentapp/view/tab_pages/search_page/search_page_widget_component/property/view_rent_property.dart';
 import 'package:video_player/video_player.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:rentapp/theme/theme.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+// Price formatting utility
+String formatPrice(String price) {
+  // Extract numeric value from price string (remove currency symbols and commas)
+  final numericString = price.replaceAll(RegExp(r'[₦,\s/month]'), '');
+  final numericValue = double.tryParse(numericString);
+
+  if (numericValue == null) return price;
+
+  if (numericValue >= 1000000) {
+    // Format as millions (e.g., 1.23M)
+    final millions = numericValue / 1000000;
+    return '${millions.toStringAsFixed(millions.truncateToDouble() == millions ? 0 : 1)}M';
+  } else if (numericValue >= 1000) {
+    // Format as thousands (e.g., 123K)
+    final thousands = numericValue / 1000;
+    return '${thousands.toStringAsFixed(thousands.truncateToDouble() == thousands ? 0 : 1)}K';
+  }
+
+  return price; // Return original if not large enough
+}
+
+// Comment data model
+class PropertyComment {
+  final String id;
+  final String userId;
+  final String userName;
+  final String comment;
+  final DateTime timestamp;
+
+  PropertyComment({
+    required this.id,
+    required this.userId,
+    required this.userName,
+    required this.comment,
+    required this.timestamp,
+  });
+
+  factory PropertyComment.fromJson(Map<String, dynamic> json) {
+    return PropertyComment(
+      id: json['id'],
+      userId: json['userId'],
+      userName: json['userName'],
+      comment: json['comment'],
+      timestamp: DateTime.parse(json['timestamp']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'userId': userId,
+      'userName': userName,
+      'comment': comment,
+      'timestamp': timestamp.toIso8601String(),
+    };
+  }
+}
 
 // Sample data - replace with your actual data model
 class Property {
@@ -129,7 +190,7 @@ final List<Property> list_view_properties = [
         'type': 'image',
         'url': 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c',
       },
-      {'type': 'video', 'url': 'https://www.youtube.com/watch?v=zumJJUL_ruM'},
+      {'type': 'video', 'url': 'https://www.youtube.com/watch?v=kJQP7kiw5Fk'},
     ],
     'price': '₦480,000/month',
     'listingType': 'rent',
@@ -161,7 +222,7 @@ final List<Property> list_view_properties = [
         'type': 'image',
         'url': 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea',
       },
-      {'type': 'video', 'url': 'https://www.youtube.com/watch?v=8qtIdaJ779Y'},
+      {'type': 'video', 'url': 'https://www.youtube.com/watch?v=8a8z7QWxK1M'},
     ],
     'price': '₦1,000,000/month',
     'listingType': 'rent',
@@ -193,7 +254,7 @@ final List<Property> list_view_properties = [
         'type': 'image',
         'url': 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750',
       },
-      {'type': 'video', 'url': 'https://www.youtube.com/watch?v=1jJIrToLH8o'},
+      {'type': 'video', 'url': 'https://www.youtube.com/watch?v=YqeW9_5kURI'},
     ],
     'price': '₦45,000,000',
     'listingType': 'buy',
@@ -224,7 +285,7 @@ final List<Property> list_view_properties = [
         'type': 'image',
         'url': 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c',
       },
-      {'type': 'video', 'url': 'https://www.youtube.com/watch?v=vVvHqMaPHRw'},
+      {'type': 'video', 'url': 'https://www.youtube.com/watch?v=8qtIdaJ779Y'},
     ],
     'price': '₦720,000/month',
     'listingType': 'rent',
@@ -248,7 +309,7 @@ final List<Property> list_view_properties = [
         'type': 'image',
         'url': 'https://images.unsplash.com/photo-1572120360610-d971b9d7767c',
       },
-      {'type': 'video', 'url': 'https://www.youtube.com/watch?v=dP15zlyra3c'},
+      {'type': 'video', 'url': 'https://www.youtube.com/watch?v=1jJIrToLH8o'},
     ],
     'price': '₦380,000/month',
     'listingType': 'rent',
@@ -373,6 +434,249 @@ class _PropertyListViewCardState extends State<PropertyListViewCard>
     return match?.group(1);
   }
 
+  void _showCommentsModal(BuildContext context) {
+    final TextEditingController commentController = TextEditingController();
+    final List<PropertyComment> comments =
+        []; // This will be fetched from Firebase later
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.8,
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
+              child: Column(
+                children: [
+                  // Header
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: igBlue.withOpacity(0.1),
+                      borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(20),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.comment, color: igBlue),
+                        const SizedBox(width: 12),
+                        Text(
+                          'Comments (${comments.length})',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Spacer(),
+                        IconButton(
+                          icon: const Icon(Icons.close),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Comments List
+                  Expanded(
+                    child: comments.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.comment_outlined,
+                                  size: 64,
+                                  color: Colors.grey[400],
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'No comments yet',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Be the first to comment!',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey[500],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )
+                        : ListView.builder(
+                            padding: const EdgeInsets.all(16),
+                            itemCount: comments.length,
+                            itemBuilder: (context, index) {
+                              final comment = comments[index];
+                              return Container(
+                                margin: const EdgeInsets.only(bottom: 12),
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[50],
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 16,
+                                          backgroundColor: igBlue,
+                                          child: Text(
+                                            comment.userName[0].toUpperCase(),
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          comment.userName,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const Spacer(),
+                                        Text(
+                                          _formatCommentTime(comment.timestamp),
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey[600],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(comment.comment),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+
+                  // Comment Input
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border(top: BorderSide(color: Colors.grey[200]!)),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: commentController,
+                            decoration: InputDecoration(
+                              hintText: 'Write a comment...',
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(24),
+                                borderSide: BorderSide.none,
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey[100],
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 12,
+                              ),
+                            ),
+                            maxLines: null,
+                            textInputAction: TextInputAction.send,
+                            onSubmitted: (value) => _submitComment(
+                              commentController,
+                              comments,
+                              setModalState,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: igBlue,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.send, color: Colors.white),
+                            onPressed: () => _submitComment(
+                              commentController,
+                              comments,
+                              setModalState,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _submitComment(
+    TextEditingController controller,
+    List<PropertyComment> comments,
+    StateSetter setModalState,
+  ) {
+    final commentText = controller.text.trim();
+    if (commentText.isEmpty) return;
+
+    // TODO: Replace with actual user data from Firebase Auth
+    final newComment = PropertyComment(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      userId: 'current_user_id', // TODO: Get from Firebase Auth
+      userName: 'Current User', // TODO: Get from Firebase Auth
+      comment: commentText,
+      timestamp: DateTime.now(),
+    );
+
+    setModalState(() {
+      comments.add(newComment);
+    });
+
+    controller.clear();
+
+    // TODO: Save comment to Firebase Firestore
+    // FirebaseFirestore.instance.collection('properties')
+    //     .doc(widget.property['id'].toString())
+    //     .collection('comments')
+    //     .add(newComment.toJson());
+  }
+
+  String _formatCommentTime(DateTime timestamp) {
+    final now = DateTime.now();
+    final difference = now.difference(timestamp);
+
+    if (difference.inMinutes < 1) {
+      return 'Just now';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes}m ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays}d ago';
+    } else {
+      return '${timestamp.day}/${timestamp.month}/${timestamp.year}';
+    }
+  }
+
   void _handleDoubleTap() {
     widget.onFavoriteToggle();
     setState(() {
@@ -392,39 +696,101 @@ class _PropertyListViewCardState extends State<PropertyListViewCard>
     final media = widget.property['media'] as List<dynamic>;
 
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        // Navigate to property details page
+        Get.to(() => PropertyDetailsPage(property: widget.property));
+      },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
+        margin: const EdgeInsets.only(bottom: 24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+              spreadRadius: 0,
+            ),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+              spreadRadius: 0,
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
               child: Row(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [igBlue.withOpacity(0.8), igBlue],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: igBlue.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
                     child: CircleAvatar(
-                      radius: 16,
-                      child: Text(widget.property['title'][0]),
+                      radius: 20,
+                      backgroundColor: Colors.transparent,
+                      child: Text(
+                        widget.property['title'][0],
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           widget.property['title'],
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          widget.property['location'],
                           style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                            letterSpacing: -0.3,
                           ),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.location_on,
+                              size: 13,
+                              color: Colors.grey[500],
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                widget.property['location'],
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.grey[600],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -434,303 +800,431 @@ class _PropertyListViewCardState extends State<PropertyListViewCard>
             ),
 
             // Media carousel with double-tap handler
-            GestureDetector(
-              onDoubleTap: _handleDoubleTap,
-              child: SizedBox(
-                height: 400,
-                child: Stack(
-                  children: [
-                    PageView.builder(
-                      itemCount: media.length,
-                      onPageChanged: (index) {
-                        setState(() {
-                          _currentMediaIndex = index;
-                        });
-                      },
-                      itemBuilder: (context, index) {
-                        final mediaItem = media[index];
-                        if (mediaItem['type'] == 'video') {
-                          final url = mediaItem['url'] as String;
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: GestureDetector(
+                  onDoubleTap: _handleDoubleTap,
+                  child: Container(
+                    height: 400,
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Stack(
+                      children: [
+                        PageView.builder(
+                          itemCount: media.length,
+                          onPageChanged: (index) {
+                            setState(() {
+                              _currentMediaIndex = index;
+                            });
+                          },
+                          itemBuilder: (context, index) {
+                            final mediaItem = media[index];
+                            if (mediaItem['type'] == 'video') {
+                              final url = mediaItem['url'] as String;
 
-                          // Check if it's a YouTube URL
-                          if (_extractYoutubeVideoId(url) != null) {
-                            final youtubeController = _getYoutubeController(
-                              index,
-                              url,
-                            );
-                            if (youtubeController != null) {
-                              return YoutubePlayerBuilder(
-                                player: YoutubePlayer(
-                                  controller: youtubeController,
-                                  showVideoProgressIndicator: true,
-                                  progressIndicatorColor: Colors.red,
-                                  progressColors: const ProgressBarColors(
-                                    playedColor: Colors.red,
-                                    handleColor: Colors.redAccent,
+                              // Check if it's a YouTube URL
+                              if (_extractYoutubeVideoId(url) != null) {
+                                final youtubeController = _getYoutubeController(
+                                  index,
+                                  url,
+                                );
+                                if (youtubeController != null) {
+                                  return YoutubePlayerBuilder(
+                                    player: YoutubePlayer(
+                                      controller: youtubeController,
+                                      showVideoProgressIndicator: true,
+                                      progressIndicatorColor: Colors.red,
+                                      progressColors: const ProgressBarColors(
+                                        playedColor: Colors.red,
+                                        handleColor: Colors.redAccent,
+                                      ),
+                                    ),
+                                    builder: (context, player) {
+                                      return Container(
+                                        color: Colors.black,
+                                        child: player,
+                                      );
+                                    },
+                                  );
+                                }
+                              } else {
+                                // Handle direct video URLs
+                                final controller = _getVideoController(
+                                  index,
+                                  url,
+                                );
+                                if (controller != null &&
+                                    controller.value.isInitialized) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        controller.value.isPlaying
+                                            ? controller.pause()
+                                            : controller.play();
+                                      });
+                                    },
+                                    child: Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        AspectRatio(
+                                          aspectRatio:
+                                              controller.value.aspectRatio,
+                                          child: VideoPlayer(controller),
+                                        ),
+                                        if (!controller.value.isPlaying)
+                                          const Icon(
+                                            Icons.play_circle_outline,
+                                            size: 100,
+                                            color: Colors.white,
+                                          ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                              }
+
+                              // Loading state for both YouTube and direct videos
+                              return Container(
+                                color: Colors.black,
+                                child: const Center(
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
                                   ),
                                 ),
-                                builder: (context, player) {
-                                  return Container(
-                                    color: Colors.black,
-                                    child: player,
+                              );
+                            }
+                            return Container(
+                              color: Colors.grey[300],
+                              child: Image.network(
+                                mediaItem['url'],
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Center(
+                                    child: Icon(
+                                      Icons.home,
+                                      size: 100,
+                                      color: Colors.grey,
+                                    ),
                                   );
                                 },
-                              );
-                            }
-                          } else {
-                            // Handle direct video URLs
-                            final controller = _getVideoController(index, url);
-                            if (controller != null &&
-                                controller.value.isInitialized) {
-                              return GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    controller.value.isPlaying
-                                        ? controller.pause()
-                                        : controller.play();
-                                  });
-                                },
-                                child: Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    AspectRatio(
-                                      aspectRatio: controller.value.aspectRatio,
-                                      child: VideoPlayer(controller),
-                                    ),
-                                    if (!controller.value.isPlaying)
-                                      const Icon(
-                                        Icons.play_circle_outline,
-                                        size: 100,
-                                        color: Colors.white,
-                                      ),
-                                  ],
+                              ),
+                            );
+                          },
+                        ),
+                        // Media indicator dots
+                        Positioned(
+                          top: 12,
+                          left: 0,
+                          right: 0,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(
+                              media.length,
+                              (index) => Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 3,
                                 ),
-                              );
-                            }
-                          }
-
-                          // Loading state for both YouTube and direct videos
-                          return Container(
-                            color: Colors.black,
-                            child: const Center(
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
+                                width: 6,
+                                height: 6,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: _currentMediaIndex == index
+                                      ? Colors.white
+                                      : Colors.white.withOpacity(0.5),
+                                ),
                               ),
                             ),
-                          );
-                        }
-                        return Container(
-                          color: Colors.grey[300],
-                          child: Image.network(
-                            mediaItem['url'],
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Center(
-                                child: Icon(
-                                  Icons.home,
+                          ),
+                        ),
+                        if (_showHeart)
+                          Positioned.fill(
+                            child: Center(
+                              child: ScaleTransition(
+                                scale: _scaleAnimation,
+                                child: const Icon(
+                                  Icons.favorite,
+                                  color: Colors.red,
                                   size: 100,
-                                  color: Colors.grey,
                                 ),
-                              );
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                    // Media indicator dots
-                    Positioned(
-                      top: 12,
-                      left: 0,
-                      right: 0,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: List.generate(
-                          media.length,
-                          (index) => Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 3),
-                            width: 6,
-                            height: 6,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: _currentMediaIndex == index
-                                  ? Colors.white
-                                  : Colors.white.withOpacity(0.5),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
+                      ],
                     ),
-                    if (_showHeart)
-                      Positioned.fill(
-                        child: Center(
-                          child: ScaleTransition(
-                            scale: _scaleAnimation,
-                            child: const Icon(
-                              Icons.favorite,
-                              color: Colors.red,
-                              size: 100,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
+                  ),
                 ),
               ),
             ),
 
             // Actions
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          widget.isFavorite
-                              ? Icons.favorite
-                              : Icons.favorite_border,
-                          color: widget.isFavorite ? Colors.red : Colors.black,
-                          size: 30,
+                  // Left side - Action buttons and price
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: widget.isFavorite
+                                ? Colors.red.withOpacity(0.1)
+                                : Colors.grey.withOpacity(0.05),
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              widget.isFavorite
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: widget.isFavorite
+                                  ? Colors.red
+                                  : Colors.grey[700],
+                              size: 26,
+                            ),
+                            onPressed: widget.onFavoriteToggle,
+                            padding: const EdgeInsets.all(8),
+                            constraints: const BoxConstraints(),
+                          ),
                         ),
-                        onPressed: widget.onFavoriteToggle,
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.send_outlined, size: 28),
-                        onPressed: () {
-                          showModalBottomSheet(
-                            context: context,
-                            builder: (context) {
-                              return Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      'Send an Inquiry',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    TextField(
-                                      maxLines: 4,
-                                      decoration: InputDecoration(
-                                        hintText: 'Write your review here...',
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            8,
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.grey.withOpacity(0.05),
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.send_outlined,
+                              size: 24,
+                              color: Colors.grey[700],
+                            ),
+                            onPressed: () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'Send an Inquiry',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        // Handle review submission logic here
-                                      },
-                                      child: const Text('Submit'),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        TextButton(
+                                        const SizedBox(height: 16),
+                                        TextField(
+                                          maxLines: 4,
+                                          decoration: InputDecoration(
+                                            hintText:
+                                                'Write your review here...',
+                                            border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        ElevatedButton(
                                           onPressed: () {
                                             Navigator.pop(context);
+                                            // Handle review submission logic here
                                           },
-                                          child: const Text(
-                                            'Cancel',
-                                            style: TextStyle(color: Colors.red),
-                                          ),
+                                          child: const Text('Submit'),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text(
+                                                'Cancel',
+                                                style: TextStyle(
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
+                                  );
+                                },
                               );
                             },
-                          );
-                        },
-                      ),
-                      //  IconButton(icon: const Icon(Icons.share), onPressed: () {}),
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
+                            padding: const EdgeInsets.all(8),
+                            constraints: const BoxConstraints(),
+                          ),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.grey.withOpacity(0.05),
+                          ),
+                          child: IconButton(
+                            icon: FaIcon(
+                              FontAwesomeIcons.commentDots,
+                              size: 20,
+                              color: Colors.grey[700],
                             ),
-                            decoration: BoxDecoration(
+                            onPressed: () => _showCommentsModal(context),
+                            padding: const EdgeInsets.all(8),
+                            constraints: const BoxConstraints(),
+                            tooltip: 'Comments',
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Price info beside comment
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: widget.property['listingType'] == 'rent'
+                                  ? [Colors.blue.shade50, Colors.blue.shade100]
+                                  : [
+                                      Colors.green.shade50,
+                                      Colors.green.shade100,
+                                    ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
                               color: widget.property['listingType'] == 'rent'
-                                  ? Colors.blue.shade100
-                                  : Colors.green.shade100,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              widget.property['listingType'] == 'rent'
-                                  ? 'FOR RENT'
-                                  : 'FOR SALE',
-                              style: TextStyle(
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                                color: widget.property['listingType'] == 'rent'
-                                    ? Colors.blue.shade700
-                                    : Colors.green.shade700,
-                              ),
+                                  ? Colors.blue.shade200
+                                  : Colors.green.shade200,
+                              width: 0.5,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            widget.property['price'],
+                          child: Text(
+                            widget.property['listingType'] == 'rent'
+                                ? 'FOR RENT'
+                                : 'FOR SALE',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.5,
+                              color: widget.property['listingType'] == 'rent'
+                                  ? Colors.blue.shade700
+                                  : Colors.green.shade700,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Flexible(
+                          child: Text(
+                            'N' + formatPrice(widget.property['price']),
                             style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: Colors.black,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 19,
+                              color: Colors.black87,
+                              letterSpacing: -0.5,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ],
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-
             // Property details
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // const Divider(thickness: 1, height: 16),
+                  const Divider(thickness: 0.5, height: 16),
+                  const SizedBox(height: 4),
                   Row(
                     children: [
-                      Icon(Icons.king_bed, size: 16, color: Colors.grey[600]),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${widget.property['beds']} beds',
-                        style: const TextStyle(color: Colors.grey),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.king_bed,
+                              size: 16,
+                              color: Colors.grey[700],
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              '${widget.property['beds']} beds',
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(width: 16),
-                      Icon(Icons.bathtub, size: 16, color: Colors.grey[600]),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${widget.property['baths']} baths',
-                        style: const TextStyle(color: Colors.grey),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.bathtub,
+                              size: 16,
+                              color: Colors.grey[700],
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              '${widget.property['baths']} baths',
+                              style: TextStyle(
+                                color: Colors.grey[700],
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
             ),
-
-            const Divider(thickness: 1, height: 16),
           ],
         ),
       ),

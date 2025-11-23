@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:rentapp/services/firebase_service.dart';
+import 'package:rentapp/theme/theme.dart';
 
 class ChangePasswordProfilePage extends StatefulWidget {
   const ChangePasswordProfilePage({
@@ -76,7 +78,7 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
   double _computeStrength(String value) {
     if (value.isEmpty) return 0;
     int score = 0;
-    final lengthOK = value.length >= 8;
+    final lengthOK = value.length >= 6;
     final hasLower = RegExp(r'[a-z]').hasMatch(value);
     final hasUpper = RegExp(r'[A-Z]').hasMatch(value);
     final hasDigit = RegExp(r'\d').hasMatch(value);
@@ -116,7 +118,7 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
   String? _validateNew(String? v) {
     final value = v?.trim() ?? '';
     if (value.isEmpty) return 'Enter a new password';
-    if (value.length < 8) return 'Use at least 8 characters';
+    if (value.length < 6) return 'Use at least 6 characters';
     if (!RegExp(r'[A-Z]').hasMatch(value)) {
       return 'Add at least one uppercase letter';
     }
@@ -153,14 +155,54 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
       if (!mounted) return;
       HapticFeedback.mediumImpact();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password updated successfully')),
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white, size: 24),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Password updated successfully!',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.green.shade600,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          margin: EdgeInsets.all(16),
+          duration: Duration(seconds: 3),
+        ),
       );
       Navigator.of(context).maybePop();
     } catch (e) {
       if (!mounted) return;
       HapticFeedback.vibrate();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.error, color: Colors.white, size: 24),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  e.toString().replaceFirst('Exception: ', ''),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.red.shade600,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          margin: EdgeInsets.all(16),
+          duration: Duration(seconds: 4),
+        ),
       );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
@@ -178,7 +220,12 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
     return WillPopScope(
       onWillPop: () async => !_isSubmitting,
       child: Scaffold(
-        appBar: AppBar(title: Text(widget.title)),
+        appBar: AppBar(
+          title: Text(widget.title),
+          backgroundColor: igBlue,
+          foregroundColor: Colors.white,
+          elevation: 0,
+        ),
         body: SafeArea(
           child: Form(
             key: _formKey,
@@ -227,7 +274,7 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
                     labelText: 'New password',
                     prefixIcon: const Icon(Icons.lock_reset),
                     helperText:
-                        'Use at least 8 chars with upper, lower, number and symbol.',
+                        'Use at least 6 chars with upper, lower, number and symbol.',
                     suffixIcon: IconButton(
                       onPressed: () =>
                           setState(() => _obscureNew = !_obscureNew),
@@ -281,11 +328,25 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
                         ? const SizedBox(
                             width: 18,
                             height: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            ),
                           )
                         : const Icon(Icons.check),
                     label: Text(
                       _isSubmitting ? 'Updating...' : 'Update Password',
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: igBlue,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
                     ),
                     onPressed: canSubmit ? _submit : null,
                   ),
@@ -296,10 +357,33 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
                       ? null
                       : () {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Use account recovery if you forgot your current password.',
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  Icon(
+                                    Icons.info,
+                                    color: Colors.white,
+                                    size: 24,
+                                  ),
+                                  SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      'Use account recovery if you forgot your current password.',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
+                              backgroundColor: igBlue,
+                              behavior: SnackBarBehavior.floating,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              margin: EdgeInsets.all(16),
+                              duration: Duration(seconds: 4),
                             ),
                           );
                         },
@@ -353,7 +437,7 @@ class _RequirementsList extends StatelessWidget {
 
   final String newPassword;
 
-  bool get _len => newPassword.length >= 8;
+  bool get _len => newPassword.length >= 6;
   bool get _upper => RegExp(r'[A-Z]').hasMatch(newPassword);
   bool get _lower => RegExp(r'[a-z]').hasMatch(newPassword);
   bool get _digit => RegExp(r'\d').hasMatch(newPassword);
@@ -363,7 +447,7 @@ class _RequirementsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = <_ReqItem>[
-      _ReqItem('At least 8 characters', _len),
+      _ReqItem('At least 6 characters', _len),
       _ReqItem('Uppercase letter (A-Z)', _upper),
       _ReqItem('Lowercase letter (a-z)', _lower),
       _ReqItem('Number (0-9)', _digit),
@@ -408,7 +492,7 @@ class _FirebaseChangePasswordService {
     String currentPassword,
     String newPassword,
   ) async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseService.instance.currentUser;
 
     if (user == null || user.email == null) {
       throw Exception('No user currently logged in');
@@ -439,6 +523,8 @@ class _FirebaseChangePasswordService {
           throw Exception('New password is too weak');
         case 'requires-recent-login':
           throw Exception('Please log out and log back in, then try again');
+        case 'too-many-requests':
+          throw Exception('Too many attempts. Please try again later');
         default:
           throw Exception(e.message ?? 'Failed to update password');
       }

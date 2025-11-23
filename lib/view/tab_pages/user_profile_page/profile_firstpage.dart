@@ -10,6 +10,7 @@ import 'package:rentapp/view/tab_pages/user_profile_page/account_information.dar
 import 'package:rentapp/view/tab_pages/user_profile_page/change_password_profilepage.dart';
 import 'package:rentapp/view/tab_pages/user_profile_page/policies_folder/help_support_page.dart';
 import 'package:rentapp/view/tab_pages/user_profile_page/user_personal_settings.dart';
+import 'package:rentapp/services/firebase_service.dart';
 
 class ProfileFirstpage extends StatefulWidget {
   const ProfileFirstpage({super.key});
@@ -21,14 +22,27 @@ class ProfileFirstpage extends StatefulWidget {
 class _ProfileFirstpageState extends State<ProfileFirstpage> {
   final AuthController authController = Get.find<AuthController>();
   final ProfileController profileController = Get.put(ProfileController());
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseFirestore _firestore = FirebaseService.instance.firestore;
+
+  @override
+  void initState() {
+    super.initState();
+    // Ensure Firebase is initialized when profile page is accessed
+    _initializeFirebaseIfNeeded();
+  }
+
+  Future<void> _initializeFirebaseIfNeeded() async {
+    if (!FirebaseService.instance.isInitialized) {
+      await FirebaseService.instance.initialize();
+    }
+  }
 
   bool isGuestUser() {
-    return FirebaseAuth.instance.currentUser == null;
+    return FirebaseService.instance.currentUser == null;
   }
 
   Future<Map<String, dynamic>?> _getUserData() async {
-    final user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseService.instance.currentUser;
     if (user == null) return null;
 
     try {
@@ -145,29 +159,142 @@ class _ProfileFirstpageState extends State<ProfileFirstpage> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('Logout Confirmation'),
-                    content: Text('Are you sure you want to logout?'),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    title: Row(
+                      children: [
+                        Icon(
+                          Icons.logout,
+                          color: Colors.red.shade400,
+                          size: 28,
+                        ),
+                        SizedBox(width: 12),
+                        Text(
+                          'Logout',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ],
+                    ),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Are you sure you want to logout?',
+                          style: TextStyle(fontSize: 16, color: Colors.black87),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'You will need to sign in again to access your account.',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
                     actions: [
-                      TextButton(
+                        TextButton(
                         onPressed: () {
                           Navigator.of(context).pop(); // Close the dialog
                         },
-                        child: Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: () {
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          side: BorderSide(
+                            color: Colors.grey.shade400,
+                            width: 1,
+                          ),
+                          ),
+                        ),
+                        child: Text(
+                          'Stay',
+                          style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey.shade700,
+                          fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        ),
+                      ElevatedButton(
+                        onPressed: () async {
                           Navigator.of(context).pop(); // Close the dialog
-                          FirebaseAuth.instance.signOut();
-                          Get.offAll(
-                            () => FirstPage(),
-                          ); // Navigate to FirstPage
+
+                          // Show loading indicator
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                content: Row(
+                                  children: [
+                                    CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        igBlue,
+                                      ),
+                                    ),
+                                    SizedBox(width: 16),
+                                    Text(
+                                      'Signing out...',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+
+                          try {
+                            await FirebaseService.instance.auth.signOut();
+                            Get.offAll(() => FirstPage());
+                          } catch (e) {
+                            Navigator.of(context).pop(); // Close loading dialog
+                            _showErrorMessage(
+                              context,
+                              'Failed to logout. Please try again.',
+                            );
+                          }
                         },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red.shade400,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 12,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          elevation: 0,
+                        ),
                         child: Text(
                           'Logout',
-                          style: TextStyle(color: Colors.red),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ],
+                    actionsPadding: EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
                   );
                 },
               );
@@ -250,7 +377,7 @@ class _ProfileFirstpageState extends State<ProfileFirstpage> {
                 )
               else
                 StreamBuilder<User?>(
-                  stream: FirebaseAuth.instance.authStateChanges(),
+                  stream: FirebaseService.instance.auth.authStateChanges(),
                   builder: (context, authSnapshot) {
                     if (!authSnapshot.hasData) {
                       return Center(child: Text('Not logged in'));

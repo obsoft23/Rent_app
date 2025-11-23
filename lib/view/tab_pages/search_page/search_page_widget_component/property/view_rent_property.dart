@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PropertyDetailsPage extends StatefulWidget {
-  final Property property;
+  final Map<String, dynamic> property;
   final String? heroTag;
   final String? videoUrl; // Optional: video tour URL (e.g., YouTube)
 
@@ -25,8 +25,21 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
   bool _showFullDescription = false;
 
   Future<void> _openVideo() async {
-    final url = widget.videoUrl;
-    if (url == null || url.isEmpty) return;
+    final media = widget.property['media'] as List<dynamic>;
+    final videoItem = media.firstWhere(
+      (item) => item['type'] == 'video',
+      orElse: () => null,
+    );
+
+    if (videoItem == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No video available for this property')),
+      );
+      return;
+    }
+
+    final url = videoItem['url'] as String;
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -41,6 +54,13 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
   @override
   Widget build(BuildContext context) {
     final property = widget.property;
+    final media = property['media'] as List<dynamic>;
+    final firstImage =
+        media.firstWhere(
+              (item) => item['type'] == 'image',
+              orElse: () => media.isNotEmpty ? media[0] : {'url': ''},
+            )['url']
+            as String;
 
     return Scaffold(
       appBar: null,
@@ -85,14 +105,11 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
                         behavior: HitTestBehavior.opaque,
                         onTap: () => setState(() => _isFav = !_isFav),
                         child: widget.heroTag == null
-                            ? Image.network(
-                                property.imageUrl,
-                                fit: BoxFit.cover,
-                              )
+                            ? Image.network(firstImage, fit: BoxFit.cover)
                             : Hero(
                                 tag: widget.heroTag!,
                                 child: Image.network(
-                                  property.imageUrl,
+                                  firstImage,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -121,7 +138,7 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
                         children: [
                           Expanded(
                             child: Text(
-                              property.title,
+                              property['title'],
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
@@ -133,7 +150,7 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          _RatingPill(rating: property.rating),
+                          // Rating removed - not in property data structure
                         ],
                       ),
                     ),
@@ -220,7 +237,7 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '₦${property.price}',
+                                      property['price'],
                                       style: const TextStyle(
                                         fontSize: 30,
                                         fontWeight: FontWeight.w800,
@@ -237,7 +254,7 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
                                         const SizedBox(width: 4),
                                         Expanded(
                                           child: Text(
-                                            property.street,
+                                            property['location'],
                                             style: const TextStyle(
                                               fontSize: 14.5,
                                               color: Colors.black54,
@@ -266,22 +283,24 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
                           ),
                           const SizedBox(height: 14),
 
-                          // Quick highlights (from features)
-                          if (property.features.isNotEmpty) ...[
-                            const Text(
-                              'Highlights',
-                              style: TextStyle(fontWeight: FontWeight.w800),
-                            ),
-                            const SizedBox(height: 10),
-                            Wrap(
-                              spacing: 10,
-                              runSpacing: 10,
-                              children: property.features
-                                  .take(8)
-                                  .map((f) => _SoftChip(label: f))
-                                  .toList(),
-                            ),
-                          ],
+                          // Quick highlights (from beds/baths)
+                          const Text(
+                            'Highlights',
+                            style: TextStyle(fontWeight: FontWeight.w800),
+                          ),
+                          const SizedBox(height: 10),
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: [
+                              '${property['beds']} bedroom${property['beds'] == 1 ? '' : 's'}',
+                              '${property['baths']} bathroom${property['baths'] == 1 ? '' : 's'}',
+                              if (property['listingType'] == 'rent')
+                                'For Rent'
+                              else
+                                'For Sale',
+                            ].map((f) => _SoftChip(label: f)).toList(),
+                          ),
                         ],
                       ),
                     ),
@@ -296,7 +315,8 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
                         children: [
                           AnimatedCrossFade(
                             firstChild: Text(
-                              property.description,
+                              property['description'] ??
+                                  'No description available.',
                               maxLines: 4,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -306,7 +326,8 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
                               ),
                             ),
                             secondChild: Text(
-                              property.description,
+                              property['description'] ??
+                                  'No description available.',
                               style: TextStyle(
                                 fontSize: 15.5,
                                 height: 1.55,
@@ -344,24 +365,54 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
 
                     const SizedBox(height: 16),
 
-                    // Mini gallery (repeats the main image for demo)
+                    // Photo gallery from property media
                     _CardSection(
-                      title: 'Photos',
+                      title: 'Photos & Videos',
                       child: SizedBox(
                         height: 88,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
-                          itemCount: 5,
+                          itemCount: media.length,
                           separatorBuilder: (_, __) =>
                               const SizedBox(width: 10),
                           itemBuilder: (context, index) {
+                            final mediaItem = media[index];
                             return ClipRRect(
                               borderRadius: BorderRadius.circular(12),
                               child: AspectRatio(
                                 aspectRatio: 16 / 10,
-                                child: Image.network(
-                                  widget.property.imageUrl,
-                                  fit: BoxFit.cover,
+                                child: Stack(
+                                  children: [
+                                    if (mediaItem['type'] == 'image')
+                                      Image.network(
+                                        mediaItem['url'],
+                                        fit: BoxFit.cover,
+                                      )
+                                    else
+                                      Container(
+                                        color: Colors.black,
+                                        child: const Center(
+                                          child: Icon(
+                                            Icons.play_circle_outline,
+                                            color: Colors.white,
+                                            size: 30,
+                                          ),
+                                        ),
+                                      ),
+                                    if (mediaItem['type'] == 'video')
+                                      Positioned.fill(
+                                        child: Container(
+                                          color: Colors.black.withOpacity(0.3),
+                                          child: const Center(
+                                            child: Icon(
+                                              Icons.play_circle_outline,
+                                              color: Colors.white,
+                                              size: 30,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
                                 ),
                               ),
                             );
@@ -386,7 +437,7 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
                               AspectRatio(
                                 aspectRatio: 16 / 9,
                                 child: Image.network(
-                                  property.imageUrl,
+                                  firstImage,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -451,7 +502,7 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
                       child: InkWell(
                         borderRadius: BorderRadius.circular(16),
                         onTap: () async {
-                          final q = Uri.encodeComponent(property.street);
+                          final q = Uri.encodeComponent(property['location']);
                           final uri = Uri.parse(
                             'https://www.google.com/maps/search/?api=1&query=$q',
                           );
@@ -566,7 +617,7 @@ class _PropertyDetailsPageEnhancedState extends State<PropertyDetailsPage> {
                 icon: const Icon(Icons.call),
                 label: const Text('Call'),
                 onPressed: () async {
-                  final uri = Uri.parse('tel:${property.agentPhone}');
+                  final uri = Uri.parse('tel:${property['agent']['phone']}');
                   if (await canLaunchUrl(uri)) {
                     await launchUrl(uri);
                   } else {
@@ -765,41 +816,6 @@ class _CircleIconButton extends StatelessWidget {
   }
 }
 
-class _RatingPill extends StatelessWidget {
-  final double rating;
-  const _RatingPill({required this.rating});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.black.withOpacity(0.08)),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.favorite, size: 16, color: Colors.redAccent),
-          const SizedBox(width: 5),
-          Text(
-            rating.toStringAsFixed(1),
-            style: const TextStyle(fontWeight: FontWeight.w800),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _SoftChip extends StatelessWidget {
   final String label;
   const _SoftChip({required this.label});
@@ -819,14 +835,14 @@ class _SoftChip extends StatelessWidget {
 }
 
 class _EnquirySheet extends StatelessWidget {
-  final Property property;
+  final Map<String, dynamic> property;
   const _EnquirySheet({required this.property});
 
   @override
   Widget build(BuildContext context) {
     final controller = TextEditingController(
       text:
-          'Hi, I\'m interested in ${property.title} on ${property.street}. Is it still available?',
+          'Hi, I\'m interested in ${property['title']} on ${property['location']}. Is it still available?',
     );
 
     return Padding(
@@ -849,7 +865,7 @@ class _EnquirySheet extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Text(
-            'Enquire about ${property.title}',
+            'Enquire about ${property['title']}',
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 12),
