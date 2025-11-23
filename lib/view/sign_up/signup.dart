@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 import 'package:rentapp/components/socials_button.dart';
+import 'package:rentapp/controller/auth_controller.dart';
 import 'package:rentapp/theme/constants.dart';
 import 'package:rentapp/theme/theme.dart';
 import 'package:rentapp/view/login/login.dart';
@@ -19,242 +20,435 @@ class CreateAccount extends StatefulWidget {
 class _CreateAccountState extends State<CreateAccount>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  late Animation<double> _animation;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+  final AuthController authController = Get.put(AuthController());
 
-  bool _isTextFieldFilled = false;
-  bool isEmail = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+  String _errorMessage = '';
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _passwordController.addListener(_checkTextField);
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 1),
+      duration: Duration(milliseconds: 1200),
     );
-    _animation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Interval(0.0, 0.6, curve: Curves.easeOut),
+      ),
     );
+
+    _slideAnimation = Tween<Offset>(begin: Offset(0, 0.3), end: Offset.zero)
+        .animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Interval(0.2, 1.0, curve: Curves.easeOutCubic),
+          ),
+        );
+
     _animationController.forward();
   }
 
-  void _checkTextField() {
-    if (_passwordController.text.length >= 6) {
+  void _clearError() {
+    if (_errorMessage.isNotEmpty) {
       setState(() {
-        _isTextFieldFilled = true;
+        _errorMessage = '';
       });
-    } else {
+    }
+  }
+
+  Future<void> _handleSignUp() async {
+    _clearError();
+
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    // Check password length
+    if (_passwordController.text.length < 6) {
       setState(() {
-        _isTextFieldFilled = false;
+        _errorMessage = 'Password must be at least 6 characters';
       });
-      print("stays false");
+      return;
+    }
+
+    // Check if passwords match
+    if (_passwordController.text != _confirmPasswordController.text) {
+      setState(() {
+        _errorMessage = 'Passwords do not match';
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      await authController.registerUser(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+        context,
+      );
+
+      // If registration successful, navigation happens in authController
+    } catch (e) {
+      setState(() {
+        _errorMessage = e.toString().replaceAll('Exception: ', '');
+      });
+      // Debug print to see what error is happening
+      print('Sign up error: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: kDefaultIconDarkColor, //change your color here
-        ),
-        centerTitle: true,
-        title: Column(
-          children: [
-            Text(
-              "Create your account",
-              style: TextStyle(
-                color: kPrimaryColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              ),
-            ),
-            //   Text("Step 1/3", style: subTitle4),
-          ],
-        ),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new_sharp),
-          onPressed: () {
-            Get.back();
-          },
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            FadeTransition(
-              opacity: _animation,
-              child: Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.all(11.0),
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: 40),
+
+                // Back button
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    icon: Icon(Icons.arrow_back_ios, size: 20),
+                    onPressed: () => Get.back(),
+                    padding: EdgeInsets.zero,
+                    constraints: BoxConstraints(),
+                  ),
+                ),
+
+                SizedBox(height: 20),
+
+                // Logo or Title
+                FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: Column(
+                    children: [
+                      Text(
+                        "RentApp",
+                        style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "Create your account",
+                        style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                ),
+
+                SizedBox(height: 40),
+
+                // Form
+                SlideTransition(
+                  position: _slideAnimation,
+                  child: FadeTransition(
+                    opacity: _fadeAnimation,
                     child: Form(
                       key: _formKey,
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          TextFormField(
-                            controller: _emailController,
-                            decoration: InputDecoration(labelText: 'Email'),
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your email';
-                              } else {
-                                isEmail = RegExp(
-                                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                                ).hasMatch(value);
-                                if (!isEmail) {
-                                  return 'Please provide a valid email address';
-                                }
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _emailController.text = value!;
-                            },
-                          ),
-                          SizedBox(height: 20.0),
-                          TextFormField(
-                            controller: _passwordController,
-                            decoration: InputDecoration(labelText: 'Password'),
-                            obscureText: true,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your password';
-                              } else if (value.length < 6 ||
-                                  _confirmPasswordController.text.length < 6) {
-                                return 'Password must be at least 6 characters';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _passwordController.text = value!;
-                            },
-                          ),
-                          SizedBox(height: 20.0),
-                          TextFormField(
-                            // controller: _confirmPasswordController,
-                            decoration: InputDecoration(
-                              labelText: 'Confirm Password',
+                        children: [
+                          // Email field
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[50],
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.grey[200]!,
+                                width: 1,
+                              ),
                             ),
-                            obscureText: true,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please confirm your password';
-                              } else if (value != _passwordController.text) {
-                                return 'Passwords do not match';
-                              } else if (value.length < 6 ||
-                                  _passwordController.text.length < 6) {
-                                return 'Password must be at least 6 characters';
-                              }
-
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _confirmPasswordController.text = value!;
-                            },
+                            child: TextFormField(
+                              controller: _emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              onChanged: (value) => _clearError(),
+                              decoration: InputDecoration(
+                                hintText: 'Email',
+                                hintStyle: TextStyle(color: Colors.grey[500]),
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 16,
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return null;
+                                }
+                                if (!RegExp(
+                                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                                ).hasMatch(value)) {
+                                  return null;
+                                }
+                                return null;
+                              },
+                            ),
                           ),
-                          // SizedBox(height: 20.0),
+
+                          SizedBox(height: 12),
+
+                          // Password field
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[50],
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.grey[200]!,
+                                width: 1,
+                              ),
+                            ),
+                            child: TextFormField(
+                              controller: _passwordController,
+                              obscureText: _obscurePassword,
+                              onChanged: (value) => _clearError(),
+                              decoration: InputDecoration(
+                                hintText: 'Password',
+                                hintStyle: TextStyle(color: Colors.grey[500]),
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 16,
+                                ),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                    color: Colors.grey[600],
+                                    size: 20,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscurePassword = !_obscurePassword;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          SizedBox(height: 12),
+
+                          // Confirm Password field
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.grey[50],
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Colors.grey[200]!,
+                                width: 1,
+                              ),
+                            ),
+                            child: TextFormField(
+                              controller: _confirmPasswordController,
+                              obscureText: _obscureConfirmPassword,
+                              onChanged: (value) => _clearError(),
+                              decoration: InputDecoration(
+                                hintText: 'Confirm Password',
+                                hintStyle: TextStyle(color: Colors.grey[500]),
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 16,
+                                ),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscureConfirmPassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                    color: Colors.grey[600],
+                                    size: 20,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _obscureConfirmPassword =
+                                          !_obscureConfirmPassword;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          // Error message
+                          if (_errorMessage.isNotEmpty)
+                            Padding(
+                              padding: EdgeInsets.only(top: 12),
+                              child: Text(
+                                _errorMessage,
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 13,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+
+                          SizedBox(height: 24),
+
+                          // Sign Up button
+                          InkWell(
+                            onTap: _isLoading ? null : _handleSignUp,
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              width: double.infinity,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: _isLoading
+                                      ? [Colors.grey[400]!, Colors.grey[400]!]
+                                      : [igBlue, igBlue.withOpacity(0.8)],
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Center(
+                                child: _isLoading
+                                    ? SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : Text(
+                                        "Sign Up",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                          ),
+
+                          SizedBox(height: 24),
+
+                          // Divider
+                          Row(
+                            children: [
+                              Expanded(child: Divider(color: Colors.grey[300])),
+                              Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                child: Text(
+                                  "OR",
+                                  style: TextStyle(
+                                    color: Colors.grey[600],
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                              Expanded(child: Divider(color: Colors.grey[300])),
+                            ],
+                          ),
+
+                          SizedBox(height: 24),
+
+                          // Social buttons
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _buildSocialButton(
+                                icon: Icon(Icons.facebook, color: Colors.blue),
+                                onTap: () {},
+                              ),
+                              _buildSocialButton(
+                                icon: SvgPicture.asset(
+                                  "assets/icons/google.svg",
+                                  width: 24,
+                                  height: 24,
+                                ),
+                                onTap: () {},
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
                   ),
-                  //
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: InkWell(
-                      onTap: () async {
-                        if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
+                ),
 
-                          // You can implement your login logic here
-                          // print('Email: $_email, Password: $_password');
-                          print("about to register user");
-                          /*  await authController.registerUser(
-                            _emailController.text.trim(),
-                            _passwordController.text.trim(),
-                            context,
-                          );*/
-                        }
-                        //Get.to(() => LocationPermissionRequestPage());
-                      },
-                      child: Ink(
-                        width: double.infinity,
-                        height: 56.0,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.blueGrey),
-                          borderRadius: BorderRadius.circular(10.0),
-                          color: _isTextFieldFilled ? igBlue : igBg,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Create Account",
-                              style: TextStyle(
-                                color: kDefaultIconDarkColor,
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 15),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                SizedBox(height: 32),
+
+                // Sign in link
+                FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SocialButton(
-                        text: "Sign up",
-                        onTap: () {
-                          //
-                        },
-                        icon: Icon(Icons.facebook),
+                      Text(
+                        "Already have an account? ",
+                        style: TextStyle(color: Colors.grey[600]),
                       ),
-                      SocialButton(
-                        text: "Sign up",
-                        onTap: () {
-                          //
-                          // authController.signInWithGoogle(context);
-                        },
-                        icon: SvgPicture.asset("assets/icons/google.svg"),
+                      GestureDetector(
+                        onTap: () => Get.to(() => LoginPage()),
+                        child: Text(
+                          "Sign in",
+                          style: TextStyle(
+                            color: igBlue,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 23),
-                  SizedBox(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text("Already have an account? "),
-                        GestureDetector(
-                          onTap: () {
-                            Get.to(() => LoginPage());
-                          },
-                          child: Text(
-                            "Sign in",
-                            style: TextStyle(
-                              color: kPrimaryColor,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+
+                SizedBox(height: 32),
+              ],
             ),
-          ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSocialButton({
+    required Widget icon,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: 80,
+        height: 50,
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey[300]!),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Center(child: icon),
       ),
     );
   }
@@ -262,6 +456,9 @@ class _CreateAccountState extends State<CreateAccount>
   @override
   void dispose() {
     _animationController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 }

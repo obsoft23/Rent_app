@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:rentapp/theme/theme.dart';
 import 'package:rentapp/landing_first_page.dart';
+import 'package:rentapp/controller/auth_controller.dart';
+import 'package:rentapp/controller/profile_controller.dart';
 import 'package:rentapp/view/tab_pages/user_profile_page/account_information.dart';
 import 'package:rentapp/view/tab_pages/user_profile_page/change_password_profilepage.dart';
 import 'package:rentapp/view/tab_pages/user_profile_page/policies_folder/help_support_page.dart';
@@ -15,16 +19,123 @@ class ProfileFirstpage extends StatefulWidget {
 }
 
 class _ProfileFirstpageState extends State<ProfileFirstpage> {
+  final AuthController authController = Get.find<AuthController>();
+  final ProfileController profileController = Get.put(ProfileController());
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   bool isGuestUser() {
-    // Replace with your logic to determine if the user is a guest
-    return true; // Example: Always returns true for now
+    return FirebaseAuth.instance.currentUser == null;
+  }
+
+  Future<Map<String, dynamic>?> _getUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return null;
+
+    try {
+      final docSnapshot = await _firestore
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      if (docSnapshot.exists) {
+        return docSnapshot.data();
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+    return null;
+  }
+
+  String _formatJoinDate(DateTime? dateTime) {
+    if (dateTime == null) return 'Unknown';
+
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+
+    if (difference.inDays == 0) {
+      return 'today';
+    } else if (difference.inDays == 1) {
+      return 'yesterday';
+    } else if (difference.inDays < 7) {
+      return '${difference.inDays} days ago';
+    } else if (difference.inDays < 30) {
+      final weeks = (difference.inDays / 7).floor();
+      return '$weeks ${weeks == 1 ? 'week' : 'weeks'} ago';
+    } else if (difference.inDays < 365) {
+      final months = (difference.inDays / 30).floor();
+      return '$months ${months == 1 ? 'month' : 'months'} ago';
+    } else {
+      final years = (difference.inDays / 365).floor();
+      return '$years ${years == 1 ? 'year' : 'years'} ago';
+    }
+  }
+
+  void _showSuccessMessage(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.white, size: 24),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.green.shade600,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: EdgeInsets.all(16),
+        duration: Duration(seconds: 3),
+        action: SnackBarAction(
+          label: 'OK',
+          textColor: Colors.white,
+          onPressed: () {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );
+  }
+
+  void _showErrorMessage(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            Icon(Icons.error, color: Colors.white, size: 24),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: Colors.red.shade600,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: EdgeInsets.all(16),
+        duration: Duration(seconds: 4),
+        action: SnackBarAction(
+          label: 'RETRY',
+          textColor: Colors.white,
+          onPressed: () {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          },
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Profile'),
+        title: Text('Account Management', style: TextStyle(fontSize: 18)),
         centerTitle: true,
         actions: [
           IconButton(
@@ -46,6 +157,7 @@ class _ProfileFirstpageState extends State<ProfileFirstpage> {
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop(); // Close the dialog
+                          FirebaseAuth.instance.signOut();
                           Get.offAll(
                             () => FirstPage(),
                           ); // Navigate to FirstPage
@@ -70,7 +182,7 @@ class _ProfileFirstpageState extends State<ProfileFirstpage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Check if the user is a guest
-              if (!isGuestUser())
+              if (isGuestUser())
                 Column(
                   children: [
                     // Guest UI
@@ -137,111 +249,285 @@ class _ProfileFirstpageState extends State<ProfileFirstpage> {
                   ],
                 )
               else
-                Column(
-                  children: [
-                    // Profile Picture
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundImage: NetworkImage(
-                        'https://via.placeholder.com/150',
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    // User Name
-                    Text(
-                      'John Doe',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 8),
-                    // User Email
-                    Text(
-                      'johndoe@example.com',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                    SizedBox(height: 24),
-                    // Profile Options
-                    ListTile(
-                      leading: Icon(Icons.person),
-                      title: Text('Account Information'),
-                      trailing: Icon(Icons.arrow_forward_ios),
-                      onTap: () {
-                        // Navigate to Account Information
-                        Get.to(
-                          () => AccountInformationPage(
-                            user: AccountInfo(
-                              id: '1',
-                              fullName: 'John Doe',
-                              email: 'johndoe@example.com',
-                              phone: '123-456-7890',
-                              avatarUrl: 'https://via.placeholder.com/150',
-                              joinedAt: DateTime.now(),
+                StreamBuilder<User?>(
+                  stream: FirebaseAuth.instance.authStateChanges(),
+                  builder: (context, authSnapshot) {
+                    if (!authSnapshot.hasData) {
+                      return Center(child: Text('Not logged in'));
+                    }
+
+                    final user = authSnapshot.data!;
+
+                    return FutureBuilder<Map<String, dynamic>?>(
+                      future: _getUserData(),
+                      builder: (context, userSnapshot) {
+                        final userData = userSnapshot.data;
+                        final displayName =
+                            userData?['displayName'] ??
+                            user.email?.split('@')[0] ??
+                            'User';
+                        final photoURL = userData?['photoURL'] ?? user.photoURL;
+
+                        return Column(
+                          children: [
+                            // Profile Picture with edit option
+                            Stack(
+                              children: [
+                                CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage:
+                                      photoURL != null && photoURL.isNotEmpty
+                                      ? NetworkImage(photoURL)
+                                      : null,
+                                  backgroundColor: Colors.grey[200],
+                                  child: photoURL == null || photoURL.isEmpty
+                                      ? Icon(
+                                          Icons.person,
+                                          size: 50,
+                                          color: Colors.grey,
+                                        )
+                                      : null,
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  right: 0,
+                                  child: Obx(
+                                    () => CircleAvatar(
+                                      radius: 18,
+                                      backgroundColor: igBlue,
+                                      child: profileController.isLoading.value
+                                          ? SizedBox(
+                                              width: 18,
+                                              height: 18,
+                                              child: CircularProgressIndicator(
+                                                strokeWidth: 2,
+                                                valueColor:
+                                                    AlwaysStoppedAnimation<
+                                                      Color
+                                                    >(Colors.white),
+                                              ),
+                                            )
+                                          : IconButton(
+                                              icon: Icon(
+                                                Icons.camera_alt,
+                                                size: 18,
+                                                color: Colors.white,
+                                              ),
+                                              padding: EdgeInsets.zero,
+                                              onPressed: () async {
+                                                try {
+                                                  final url =
+                                                      await profileController
+                                                          .uploadProfilePicture();
+                                                  if (url != null) {
+                                                    _showSuccessMessage(
+                                                      context,
+                                                      'Profile picture updated successfully!',
+                                                    );
+                                                    setState(
+                                                      () {},
+                                                    ); // Refresh UI
+                                                  }
+                                                } catch (e) {
+                                                  _showErrorMessage(
+                                                    context,
+                                                    'Failed to upload profile picture. Please try again.',
+                                                  );
+                                                }
+                                              },
+                                            ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
+                            SizedBox(height: 16),
+                            // User Name
+                            Text(
+                              displayName,
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            // User Email
+                            Text(
+                              user.email ?? 'No email',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            // Join Date with Icon
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: igBlue.withOpacity(0.08),
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: igBlue.withOpacity(0.2),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.calendar_today,
+                                    size: 16,
+                                    color: igBlue,
+                                  ),
+                                  SizedBox(width: 6),
+                                  Text(
+                                    'Joined ${_formatJoinDate(user.metadata.creationTime)}',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: igBlue.withOpacity(0.8),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: 24),
+                            // Profile Options
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.1),
+                                    spreadRadius: 1,
+                                    blurRadius: 4,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  ListTile(
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 8,
+                                    ),
+                                    leading: Container(
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: igBlue.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Icon(
+                                        Icons.lock,
+                                        color: igBlue,
+                                        size: 24,
+                                      ),
+                                    ),
+                                    title: Text(
+                                      'Change Password',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                    trailing: Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 16,
+                                      color: Colors.grey,
+                                    ),
+                                    onTap: () {
+                                      // Navigate to Change Password
+                                      Get.to(() => ChangePasswordProfilePage());
+                                    },
+                                  ),
+                                  Divider(height: 1, indent: 68),
+                                  ListTile(
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 8,
+                                    ),
+                                    leading: Container(
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: igBlue.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Icon(
+                                        Icons.settings,
+                                        color: igBlue,
+                                        size: 24,
+                                      ),
+                                    ),
+                                    title: Text(
+                                      'Settings',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                    trailing: Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 16,
+                                      color: Colors.grey,
+                                    ),
+                                    onTap: () {
+                                      // Navigate to Settings
+                                      Get.to(() => UserPersonalSettingsPage());
+                                    },
+                                  ),
+                                  Divider(height: 1, indent: 68),
+                                  ListTile(
+                                    contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 8,
+                                    ),
+                                    leading: Container(
+                                      padding: EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: igBlue.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Icon(
+                                        Icons.help,
+                                        color: igBlue,
+                                        size: 24,
+                                      ),
+                                    ),
+                                    title: Text(
+                                      'Help & Support',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                    trailing: Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 16,
+                                      color: Colors.grey,
+                                    ),
+                                    onTap: () {
+                                      // Navigate to Help & Support
+                                      Get.to(() => HelpSupportPage());
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            SizedBox(height: 24),
+                          ],
                         );
                       },
-                    ),
-                    Divider(),
-                    ListTile(
-                      leading: Icon(Icons.lock),
-                      title: Text('Change Password'),
-                      trailing: Icon(Icons.arrow_forward_ios),
-                      onTap: () {
-                        // Navigate to Change Password
-                        Get.to(() => ChangePasswordProfilePage());
-                      },
-                    ),
-                    Divider(),
-                    /* ListTile(
-                      leading: Icon(Icons.notifications),
-                      title: Text('Notifications'),
-                      trailing: Icon(Icons.arrow_forward_ios),
-                      onTap: () {
-                        // Navigate to Notifications
-                      },
-                    ),
-                    Divider(),*/
-                    ListTile(
-                      leading: Icon(Icons.settings),
-                      title: Text('Settings'),
-                      trailing: Icon(Icons.arrow_forward_ios),
-                      onTap: () {
-                        // Navigate to Settings
-                        Get.to(() => UserPersonalSettingsPage());
-                      },
-                    ),
-                    Divider(),
-                    ListTile(
-                      leading: Icon(Icons.help),
-                      title: Text('Help & Support'),
-                      trailing: Icon(Icons.arrow_forward_ios),
-                      onTap: () {
-                        // Navigate to Help & Support
-                        Get.to(() => HelpSupportPage());
-                      },
-                    ),
-
-                    SizedBox(height: 24),
-
-                    // Logout Button
-                    /* ElevatedButton.icon(
-                      onPressed: () {
-                        // Handle Logout
-                      },
-                      icon: Icon(Icons.logout),
-                      label: Text('Logout'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 32,
-                          vertical: 12,
-                        ),
-                      ),
-                    ),*/
-                  ],
+                    );
+                  },
                 ),
             ],
           ),

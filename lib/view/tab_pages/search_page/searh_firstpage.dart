@@ -13,7 +13,7 @@ import 'package:rentapp/components/shadow_card.dart';
 import 'package:rentapp/components/socials_button.dart';
 import 'package:rentapp/theme/theme.dart';
 import 'package:rentapp/view/tab_pages/search_page/buy/buy_firstpage.dart';
-import 'package:rentapp/view/tab_pages/search_page/filterpage/filterpage.dart';
+import 'package:rentapp/view/tab_pages/search_page/filterpage/filterpage.dart'; // Ensure FiltersPage is defined in this file
 import 'package:rentapp/view/tab_pages/search_page/search_page_widget_component/property_card.dart';
 
 class SearhFirstpage extends StatefulWidget {
@@ -47,7 +47,7 @@ class _SearhFirstpageState extends State<SearhFirstpage> {
                   'Hot Properties Around You',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Icon(Icons.whatshot, color: Colors.red),
               ],
             ),
@@ -72,7 +72,9 @@ class _SearhFirstpageState extends State<SearhFirstpage> {
                       ),
                     ),
                     onPressed: () {
-                      Get.to(() => FiltersPage());
+                      Get.to(
+                        () => const FiltersPage(),
+                      ); // Ensure FiltersPage is a valid widget
                     },
                     child: const Text(
                       'Rent',
@@ -129,17 +131,17 @@ class _SearhFirstpageState extends State<SearhFirstpage> {
               itemCount: list_view_properties.length,
               itemBuilder: (context, index) {
                 final property = list_view_properties[index];
-                final isFavorite = _favorites.contains(property['id']);
+                final isFavorite = _favorites.contains(property.id);
 
                 return PropertyListViewCard(
-                  property: property,
+                  property: property.toMap(),
                   isFavorite: isFavorite,
                   onFavoriteToggle: () {
                     setState(() {
                       if (isFavorite) {
-                        _favorites.remove(property['id']);
+                        _favorites.remove(property.id);
                       } else {
-                        _favorites.add(property['id']);
+                        _favorites.add(property.id);
                       }
                     });
                   },

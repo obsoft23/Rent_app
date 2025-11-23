@@ -41,7 +41,7 @@ class FirstPage extends StatelessWidget {
                     'Continue as guest',
                     style: TextStyle(
                       color: igBlue,
-                      fontWeight: FontWeight.bold,
+                      //fontWeight: FontWeight.bold,
                       fontSize: 16.5,
                     ),
                   ),

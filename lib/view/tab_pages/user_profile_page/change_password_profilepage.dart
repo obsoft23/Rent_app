@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ChangePasswordProfilePage extends StatefulWidget {
   const ChangePasswordProfilePage({
@@ -9,7 +10,7 @@ class ChangePasswordProfilePage extends StatefulWidget {
   });
 
   /// Optional callback to integrate with your auth layer.
-  /// If not provided, a demo no-op implementation is used.
+  /// If not provided, Firebase Auth implementation is used.
   final Future<void> Function(String currentPassword, String newPassword)?
   onSubmit;
 
@@ -147,7 +148,7 @@ class _ChangePasswordProfilePageState extends State<ChangePasswordProfilePage> {
     setState(() => _isSubmitting = true);
     try {
       final handler =
-          widget.onSubmit ?? _DemoChangePasswordService.updatePassword;
+          widget.onSubmit ?? _FirebaseChangePasswordService.updatePassword;
       await handler(_currentCtrl.text.trim(), _newCtrl.text.trim());
       if (!mounted) return;
       HapticFeedback.mediumImpact();
@@ -400,22 +401,50 @@ class _ReqItem {
   _ReqItem(this.text, this.ok);
 }
 
-/// Demo service used when no onSubmit is provided to the page.
-/// Replace this logic with your auth provider (e.g., FirebaseAuth reauth + updatePassword).
-class _DemoChangePasswordService {
+/// Firebase Auth service for password changes.
+/// Reauthenticates the user with current password, then updates to new password.
+class _FirebaseChangePasswordService {
   static Future<void> updatePassword(
     String currentPassword,
     String newPassword,
   ) async {
-    await Future.delayed(const Duration(milliseconds: 900));
-    // Simulate a very simple "current password" check for demo purposes only.
-    // In production, you must reauthenticate the user securely on the server/auth provider.
-    if (currentPassword.trim().isEmpty) {
-      throw Exception('Current password is required');
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null || user.email == null) {
+      throw Exception('No user currently logged in');
     }
-    if (currentPassword == newPassword) {
-      throw Exception('New password must be different from current password');
+
+    // Reauthenticate user with current password
+    final credential = EmailAuthProvider.credential(
+      email: user.email!,
+      password: currentPassword,
+    );
+
+    try {
+      // Reauthenticate
+      await user.reauthenticateWithCredential(credential);
+
+      // Update to new password
+      await user.updatePassword(newPassword);
+
+      print('✅ Password updated successfully for user: ${user.uid}');
+    } on FirebaseAuthException catch (e) {
+      print('🔴 Firebase Auth Error: ${e.code} - ${e.message}');
+
+      switch (e.code) {
+        case 'wrong-password':
+        case 'invalid-credential':
+          throw Exception('Current password is incorrect');
+        case 'weak-password':
+          throw Exception('New password is too weak');
+        case 'requires-recent-login':
+          throw Exception('Please log out and log back in, then try again');
+        default:
+          throw Exception(e.message ?? 'Failed to update password');
+      }
+    } catch (e) {
+      print('🔴 Error updating password: $e');
+      throw Exception('Failed to update password. Please try again.');
     }
-    // Success (no-op).
   }
 }

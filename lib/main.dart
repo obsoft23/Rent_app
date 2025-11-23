@@ -1,21 +1,29 @@
-// ignore_for_file: unused_import
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/state_manager.dart';
 import 'package:rentapp/components/property_card_listview.dart';
+import 'package:rentapp/controller/auth_controller.dart';
 import 'package:rentapp/firebase_options.dart';
 import 'package:rentapp/theme/theme.dart';
 import 'package:rentapp/landing_first_page.dart';
 import 'package:rentapp/view/splashscreen/splashscreen.dart';
 import 'package:rentapp/view/tab_pages/trending_page/trending_page.dart';
+import 'package:rentapp/services/firebase_service.dart';
 
 import 'view/Home/home_page.dart';
+import 'package:flutter/services.dart';
 
 Future<void> main() async {
-  //WidgetsFlutterBinding.ensureInitialized();
-  //await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Firebase lazily (only when needed)
+  // This speeds up app startup significantly
+  // Firebase will be initialized when first accessed via FirebaseService.instance
+
+  // Initialize AuthController (also lazy)
+  Get.put(AuthController());
 
   runApp(const MyApp());
 }
@@ -36,7 +44,6 @@ class MyApp extends StatelessWidget {
       ),
 
       home: SplashScreen(),
-      // home: TrendingPage(),
     );
   }
 }
